@@ -1,1176 +1,388 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClimbLog - 攀岩记录</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0c0a09;color:#fff;min-height:100vh;padding-bottom:80px}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;border:none;outline:none;font-family:inherit}
-input,select,textarea{font-family:inherit;outline:none;color:#fff}
-input::-webkit-calendar-picker-indicator{filter:invert(1)}
-
-/* Mobile App Layout */
-.header{background:linear-gradient(135deg,#1c1917,#292524,#44403c);border-bottom:1px solid #44403c;position:fixed;top:0;left:0;right:0;z-index:50;padding-top:env(safe-area-inset-top)}
-.header-inner{max-width:100%;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;height:56px}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#f97316,#ec4899);display:flex;align-items:center;justify-content:center;font-size:16px}
-.logo-text h1{font-size:17px;font-weight:700}
-.logo-text p{font-size:10px;color:#a8a29e}
-.header-actions{display:flex;gap:8px}
-.main{max-width:100%;margin:0;padding:76px 12px 20px}
-
-/* Bottom Navigation - Mobile App Style */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1c1917;border-top:1px solid #292524;display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
-.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;background:none;border:none;color:#78716c;font-size:11px;transition:all .2s}
-.bottom-nav-item.active{color:#f97316}
-.bottom-nav-item .nav-icon{font-size:22px}
-
-/* FAB - Floating Action Button */
-.fab{position:fixed;bottom:90px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ec4899);color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(249,115,22,.4);z-index:90;transition:transform .2s}
-.fab:active{transform:scale(.95)}
-
-/* Buttons - Mobile optimized */
-.btn{padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
-.btn-gray{background:#292524;color:#d6d3d1;border:1px solid #44403c}
-.btn-gray:active{background:#44403c}
-.btn-primary{background:linear-gradient(135deg,#f97316,#ec4899);color:#fff}
-.btn-primary:active{opacity:.9;transform:scale(.98)}
-.btn-sm{padding:8px 12px;font-size:12px}
-.btn-danger{background:rgba(127,29,29,.4);color:#f87171}
-.btn-danger:active{background:rgba(127,29,29,.6)}
-.btn-icon{width:40px;height:40px;padding:0;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
-
-/* Cards */
-.card{background:#1c1917;border:1px solid #292524;border-radius:12px;padding:16px}
-.card-hover{transition:all .3s}
-.card-hover:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.4)}
-
-/* Stats Grid - Mobile optimized */
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
-.stat-card{background:#1c1917;border:1px solid #292524;border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center}
-.stat-label{font-size:11px;color:#a8a29e;margin-bottom:2px}
-.stat-value{font-size:22px;font-weight:700}
-.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.icon-orange{background:rgba(249,115,22,.2);color:#f97316}
-.icon-pink{background:rgba(236,72,153,.2);color:#ec4899}
-.icon-teal{background:rgba(20,184,166,.2);color:#14b8a6}
-.icon-purple{background:rgba(139,92,246,.2);color:#8b5cf6}
-
-/* Tabs - Hidden on mobile, use bottom nav instead */
-.tabs{display:none;margin-bottom:16px;border-bottom:1px solid #292524;gap:4px;overflow-x:auto;padding:0 4px}
-.tab{padding:10px 14px;font-size:13px;font-weight:500;color:#78716c;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.tab:hover{color:#d6d3d1}
-.tab.active{color:#f97316;border-bottom-color:#f97316}
-@media(min-width:768px){.tabs{display:flex}}
-.tab-content{display:none}
-.tab-content.active{display:block}
-
-/* Charts - Mobile single column */
-.charts-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
-.chart-container{position:relative}
-canvas{max-width:100%}
-.chart-placeholder{display:flex;align-items:center;justify-content:center;height:180px;color:#57534e;flex-direction:column;gap:8px;font-size:14px}
-
-/* Calendar - Mobile optimized */
-.calendar-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.calendar-title{font-size:15px;font-weight:600}
-.calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px;text-align:center}
-.calendar-weekdays span{font-size:11px;color:#78716c;padding:4px 0}
-.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-day{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:12px;background:#1c1917;color:#a8a29e;transition:all .2s;border:1px solid transparent}
-.cal-day:active{background:#292524}
-.cal-day.has-session{background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.4);color:#f97316;font-weight:700}
-.cal-day.today{border-color:#f97316}
-.cal-day .route-count{font-size:9px;color:#f97316}
-.cal-day.empty{background:transparent;cursor:default}
-
-/* History - Mobile swipeable cards */
-.filter-bar{display:flex;gap:10px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
-.filter-bar select{background:#1c1917;border:1px solid #292524;border-radius:10px;padding:10px 14px;font-size:13px;color:#d6d3d1;min-width:120px}
-.history-item{background:#1c1917;border:1px solid #292524;border-radius:14px;padding:16px;margin-bottom:12px;transition:all .2s;position:relative;overflow:hidden}
-.history-item:active{transform:scale(.98)}
-.history-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.history-date{font-size:15px;font-weight:600}
-.history-gym{color:#a8a29e;font-size:12px;margin-left:6px}
-.history-actions{display:flex;gap:8px}
-.history-activity{font-size:12px;color:#f97316;margin-bottom:6px}
-.grades-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.grade-chip{padding:3px 8px;border-radius:6px;font-size:12px;font-weight:600}
-.grade-v0{background:#dcfce7;color:#166534}
-.grade-v1{background:#dbeafe;color:#1e40af}
-.grade-v2{background:#fef3c7;color:#92400e}
-.grade-v3{background:#fed7aa;color:#9a3412}
-.grade-v4{background:#fecaca;color:#991b1b}
-.grade-v5{background:#e9d5ff;color:#6b21a8}
-.grade-v6{background:#f5d0fe;color:#86198f}
-.grade-v7{background:#ffddd5;color:#7c2d12}
-.grade-v8{background:#fecdd3;color:#9f1239}
-.grade-v9{background:#ffe4e6;color:#881337}
-.grade-v10{background:#1e1b4b;color:#c7d2fe}
-.grade-k{background:#ccfbf1;color:#0f766e}
-.grade-s{background:#dbeafe;color:#1e40af}
-.grade-s11{background:#bbf7d0;color:#14532d}
-.grade-s12{background:#fef08a;color:#713f12}
-.grade-s13{background:#fed7aa;color:#9a3412}
-.grade-s14{background:#fca5a5;color:#7f1d1d}
-.grade-s15{background:#1e1b4b;color:#c7d2fe}
-.note-text{font-size:12px;color:#78716c;margin-top:6px}
-
-/* Routes */
-.routes-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.routes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media(max-width:900px){.routes-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.routes-grid{grid-template-columns:1fr}}
-.route-card{background:#1c1917;border:1px solid #292524;border-radius:12px;padding:14px;transition:all .2s}
-.route-card:hover{border-color:#44403c}
-.route-name{font-weight:600;margin-bottom:6px}
-.route-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.grade-badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
-.status-flash{background:rgba(20,184,166,.2);color:#14b8a6;padding:3px 8px;border-radius:6px;font-size:11px}
-.status-sent{background:rgba(59,130,246,.2);color:#60a5fa;padding:3px 8px;border-radius:6px;font-size:11px}
-.status-project{background:rgba(249,115,22,.2);color:#f97316;padding:3px 8px;border-radius:6px;font-size:11px}
-.route-actions{display:flex;gap:6px;margin-top:10px}
-
-/* Achievements */
-.achievements-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media(max-width:900px){.achievements-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.achievements-grid{grid-template-columns:1fr}}
-.ach-card{background:#1c1917;border:1px solid #292524;border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;transition:all .2s}
-.ach-card.unlocked{border-color:rgba(249,115,22,.5)}
-.ach-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;background:#292524;color:#57534e}
-.ach-card.unlocked .ach-icon{background:linear-gradient(135deg,#f97316,#ec4899);color:#fff}
-.ach-name{font-weight:600;margin-bottom:3px}
-.ach-card:not(.unlocked) .ach-name{color:#78716c}
-.ach-desc{font-size:12px;color:#57534e}
-.ach-date{font-size:11px;color:#f97316;margin-top:3px}
-.ach-status{margin-left:auto;font-size:18px;flex-shrink:0}
-
-/* Gym stats */
-.gym-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:600px){.gym-grid{grid-template-columns:repeat(2,1fr)}}
-.gym-card{background:rgba(12,10,9,.5);border-radius:10px;padding:12px;text-align:center}
-.gym-count{font-size:22px;font-weight:700;color:#f97316}
-.gym-name{font-size:12px;color:#78716c;margin-top:4px}
-
-/* Modal - Mobile bottom sheet style */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;flex-direction:column;justify-content:flex-end;z-index:100;backdrop-filter:blur(4px)}
-.modal-overlay.open{display:flex}
-.modal-box{background:#1c1917;border:1px solid #44403c;border-radius:20px 20px 0 0;padding:20px 16px;width:100%;max-width:100%;margin:0;max-height:85vh;overflow-y:auto;animation:slideUp .3s ease}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-handle{width:40px;height:4px;background:#44403c;border-radius:2px;margin:0 auto 16px}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.modal-title{font-size:17px;font-weight:700}
-.close-btn{background:#292524;border:none;color:#a8a29e;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify:center}
-.close-btn:active{background:#44403c}
-
-/* Form - Mobile optimized */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.form-group{margin-bottom:12px}
-.form-label{font-size:12px;color:#a8a29e;margin-bottom:6px;display:block}
-.form-input{width:100%;background:#0c0a09;border:1px solid #292524;border-radius:10px;padding:12px 14px;font-size:15px;color:#fff;transition:border-color .2s;height:48px}
-.form-input:focus{border-color:#f97316}
-.form-section{background:rgba(12,10,9,.5);border:1px solid #292524;border-radius:12px;padding:14px;margin-bottom:12px}
-.section-title{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section-badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
-.grade-inputs{display:grid;gap:6px;margin-top:8px}
-.grade-inputs.cols5{grid-template-columns:repeat(5,1fr)}
-.grade-inputs.cols4{grid-template-columns:repeat(4,1fr)}
-.grade-inputs.cols6{grid-template-columns:repeat(6,1fr)}
-@media(max-width:600px){.grade-inputs.cols4{grid-template-columns:repeat(4,1fr)}.grade-inputs.cols5{grid-template-columns:repeat(5,1fr)}}
-.grade-input-item{text-align:center}
-.grade-input-label{display:block;font-size:11px;font-weight:700;margin-bottom:4px;padding:2px 6px;border-radius:4px;text-align:center}
-/* 抱石 V级色阶：从绿→蓝→黄→橙→红→紫→深紫 */
-.grade-input-label.v0{background:#dcfce7;color:#166534}
-.grade-input-label.v1{background:#dbeafe;color:#1e40af}
-.grade-input-label.v2{background:#fef3c7;color:#92400e}
-.grade-input-label.v3{background:#fed7aa;color:#9a3412}
-.grade-input-label.v4{background:#fecaca;color:#991b1b}
-.grade-input-label.v5{background:#e9d5ff;color:#6b21a8}
-.grade-input-label.v6{background:#f5d0fe;color:#86198f}
-.grade-input-label.v7{background:#ffddd5;color:#7c2d12}
-.grade-input-label.v8{background:#fecdd3;color:#9f1239}
-.grade-input-label.v9{background:#ffe4e6;color:#881337}
-.grade-input-label.v10{background:#1e1b4b;color:#c7d2fe}
-/* K板 */
-.grade-input-label.kboard{background:#ccfbf1;color:#0f766e}
-/* 高墙 YDS色阶 */
-.grade-input-label.sport{background:#dbeafe;color:#1e40af}  /* 5.5-5.9 入门 */
-.grade-input-label.s11{background:#bbf7d0;color:#14532d}    /* 5.11 中级 */
-.grade-input-label.s12{background:#fef08a;color:#713f12}    /* 5.12 高级 */
-.grade-input-label.s13{background:#fed7aa;color:#9a3412}    /* 5.13 精英 */
-.grade-input-label.s14{background:#fca5a5;color:#7f1d1d}    /* 5.14 顶级 */
-.grade-input-label.s15{background:#1e1b4b;color:#c7d2fe}    /* 5.15 世界级 */
-.grade-number-input{width:100%;background:#0c0a09;border:1px solid #292524;border-radius:8px;padding:10px 4px;text-align:center;font-size:15px;font-weight:600;color:#fff;height:44px}
-.grade-number-input:focus{border-color:#f97316}
-.modal-footer{display:flex;gap:12px;margin-top:20px;padding-bottom:env(safe-area-inset-bottom)}
-.btn-block{flex:1;padding:14px;border-radius:12px;font-size:15px;font-weight:600}
-
-/* Notification - Mobile style */
-.notif{position:fixed;top:76px;left:16px;right:16px;padding:14px 20px;border-radius:12px;color:#fff;font-weight:500;font-size:14px;z-index:200;animation:slideDown .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.4);text-align:center}
-@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-.notif-success{background:linear-gradient(135deg,#10b981,#059669)}
-.notif-error{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.notif-info{background:linear-gradient(135deg,#3b82f6,#2563eb)}
-.notif-ach{background:linear-gradient(135deg,#f97316,#ec4899)}
-
-/* Empty */
-.empty{text-align:center;padding:48px 20px;color:#57534e;font-size:14px}
-.empty-icon{font-size:36px;margin-bottom:8px}
-
-/* Section heading */
-.section-heading{font-size:15px;font-weight:600;margin-bottom:14px}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:#0c0a09}
-::-webkit-scrollbar-thumb{background:#44403c;border-radius:3px}
-
-/* Bar chart manual */
-.bar-chart-wrap{padding:10px 0}
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.bar-label{font-size:12px;color:#a8a29e;width:40px;text-align:right;flex-shrink:0}
-.bar-outer{flex:1;background:#292524;border-radius:4px;height:18px;overflow:hidden}
-.bar-inner{height:100%;border-radius:4px;transition:width .5s ease;min-width:2px}
-.bar-count{font-size:12px;color:#a8a29e;width:28px;flex-shrink:0}
-
-/* Donut chart manual */
-.donut-wrap{display:flex;align-items:center;gap:20px;padding:10px 0}
-.donut-svg{flex-shrink:0}
-.donut-legend{flex:1}
-.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}
-.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-
-/* Progress chart manual */
-.line-chart-wrap{overflow-x:auto;padding:10px 0}
-.line-chart-svg{min-width:100%}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClimbLog - 攀岩记录</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rock: {
+                            50: '#f5f5f4',
+                            100: '#e7e5e4',
+                            200: '#d6d3d1',
+                            300: '#a8a29e',
+                            400: '#78716c',
+                            500: '#57534e',
+                            600: '#44403c',
+                            700: '#292524',
+                            800: '#1c1917',
+                            900: '#0c0a09',
+                        },
+                        climb: {
+                            orange: '#f97316',
+                            pink: '#ec4899',
+                            teal: '#14b8a6',
+                            purple: '#8b5cf6',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1c1917 0%, #292524 50%, #44403c 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .btn-primary { background: linear-gradient(135deg, #f97316 0%, #ec4899 100%); }
+        .btn-primary:hover { opacity: 0.9; transform: scale(1.02); }
+        .tab-active { border-bottom: 3px solid #f97316; color: #f97316; }
+        .difficulty-badge { 
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 48px; height: 28px; border-radius: 6px; font-weight: 600; font-size: 12px;
+        }
+        .boulder-v0 { background: #dcfce7; color: #166534; }
+        .boulder-v1 { background: #dbeafe; color: #1e40af; }
+        .boulder-v2 { background: #fef3c7; color: #92400e; }
+        .boulder-v3 { background: #fed7aa; color: #9a3412; }
+        .boulder-v4 { background: #fecaca; color: #991b1b; }
+        .boulder-v5 { background: #e9d5ff; color: #6b21a8; }
+        .kboard { background: #ccfbf1; color: #0f766e; }
+        .sport { background: #c7d2fe; color: #3730a3; }
+        .modal { backdrop-filter: blur(8px); }
+        .achievement-badge { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    </style>
 </head>
-<body>
-
-<!-- Header -->
-<header class="header">
-  <div class="header-inner">
-    <div class="logo">
-      <div class="logo-icon">🧗</div>
-      <div class="logo-text">
-        <h1>ClimbLog</h1>
-        <p>攀岩记录</p>
-      </div>
-    </div>
-    <div class="header-actions">
-      <button class="btn btn-gray btn-icon" onclick="exportData()" title="导出">⬇</button>
-      <label class="btn btn-gray btn-icon" style="cursor:pointer" title="导入">
-        ⬆
-        <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(this)">
-      </label>
-    </div>
-  </div>
-</header>
-
-<!-- Floating Action Button -->
-<button class="fab" onclick="openCheckIn()">＋</button>
-
-<!-- Bottom Navigation -->
-<nav class="bottom-nav">
-  <button class="bottom-nav-item active" onclick="switchTab('dashboard',this)" data-tab="dashboard">
-    <span class="nav-icon">📊</span>
-    <span>统计</span>
-  </button>
-  <button class="bottom-nav-item" onclick="switchTab('calendar',this)" data-tab="calendar">
-    <span class="nav-icon">📆</span>
-    <span>日历</span>
-  </button>
-  <button class="bottom-nav-item" onclick="switchTab('history',this)" data-tab="history">
-    <span class="nav-icon">📋</span>
-    <span>记录</span>
-  </button>
-  <button class="bottom-nav-item" onclick="switchTab('routes',this)" data-tab="routes">
-    <span class="nav-icon">🗺</span>
-    <span>线路</span>
-  </button>
-  <button class="bottom-nav-item" onclick="switchTab('achievements',this)" data-tab="achievements">
-    <span class="nav-icon">🏅</span>
-    <span>成就</span>
-  </button>
-</nav>
-
-<!-- Main -->
-<main class="main">
-  <!-- Stats -->
-  <div class="stats-grid">
-    <div class="stat-card card-hover">
-      <div><div class="stat-label">总攀爬次数</div><div class="stat-value" id="st-total">0</div></div>
-      <div class="stat-icon icon-orange">🏔</div>
-    </div>
-    <div class="stat-card card-hover">
-      <div><div class="stat-label">本月打卡</div><div class="stat-value" id="st-monthly">0</div></div>
-      <div class="stat-icon icon-pink">📅</div>
-    </div>
-    <div class="stat-card card-hover">
-      <div><div class="stat-label">完成线路</div><div class="stat-value" id="st-routes">0</div></div>
-      <div class="stat-icon icon-teal">✅</div>
-    </div>
-    <div class="stat-card card-hover">
-      <div><div class="stat-label">最高难度</div><div class="stat-value" id="st-max" style="color:#f97316">-</div></div>
-      <div class="stat-icon icon-purple">🏆</div>
-    </div>
-  </div>
-
-  <!-- Tabs (Desktop only) -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('dashboard',this)" data-tab="dashboard">📊 统计概览</button>
-    <button class="tab" onclick="switchTab('calendar',this)" data-tab="calendar">📆 日历视图</button>
-    <button class="tab" onclick="switchTab('history',this)" data-tab="history">📋 历史记录</button>
-    <button class="tab" onclick="switchTab('routes',this)" data-tab="routes">🗺 线路收藏</button>
-    <button class="tab" onclick="switchTab('achievements',this)" data-tab="achievements">🏅 成就</button>
-  </div>
-
-  <!-- Dashboard -->
-  <div id="tab-dashboard" class="tab-content active">
-    <div class="charts-grid">
-      <div class="card">
-        <div class="section-heading">难度分布</div>
-        <div id="difficulty-chart"></div>
-      </div>
-      <div class="card">
-        <div class="section-heading">攀岩类型占比</div>
-        <div id="type-chart"></div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="section-heading">每周进步曲线（线路数）</div>
-      <div id="progress-chart"></div>
-    </div>
-    <div class="card">
-      <div class="section-heading">常去岩馆</div>
-      <div class="gym-grid" id="gym-stats"><div class="empty"><div class="empty-icon">🏢</div>暂无数据</div></div>
-    </div>
-  </div>
-
-  <!-- Calendar -->
-  <div id="tab-calendar" class="tab-content">
-    <div class="card">
-      <div class="calendar-nav">
-        <button class="btn btn-gray btn-sm" onclick="changeMonth(-1)">◀ 上月</button>
-        <span class="calendar-title" id="cal-title"></span>
-        <button class="btn btn-gray btn-sm" onclick="changeMonth(1)">下月 ▶</button>
-      </div>
-      <div class="calendar-weekdays">
-        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
-      </div>
-      <div class="calendar-grid" id="cal-grid"></div>
-    </div>
-  </div>
-
-  <!-- History -->
-  <div id="tab-history" class="tab-content">
-    <div class="filter-bar">
-      <select id="filter-gym" onchange="renderHistory()">
-        <option value="">所有岩馆</option>
-      </select>
-      <select id="filter-type" onchange="renderHistory()">
-        <option value="">所有类型</option>
-        <option value="boulder">室内抱石</option>
-        <option value="kboard">K板</option>
-        <option value="sport">高墙难度</option>
-      </select>
-    </div>
-    <div id="history-list"></div>
-  </div>
-
-  <!-- Routes -->
-  <div id="tab-routes" class="tab-content">
-    <div class="routes-header">
-      <span class="section-heading" style="margin:0">线路收藏</span>
-      <button class="btn btn-primary btn-sm" onclick="openRouteModal()">＋ 添加线路</button>
-    </div>
-    <div class="routes-grid" id="routes-list"></div>
-  </div>
-
-  <!-- Achievements -->
-  <div id="tab-achievements" class="tab-content">
-    <div class="achievements-grid" id="ach-list"></div>
-  </div>
-</main>
-
-<!-- Check-in Modal -->
-<div class="modal-overlay" id="modal-checkin" onclick="if(event.target===this)closeModal('modal-checkin')">
-  <div class="modal-box">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <span class="modal-title">🧗 打卡记录</span>
-      <button class="close-btn" onclick="closeModal('modal-checkin')">✕</button>
-    </div>
-    <form id="form-checkin" onsubmit="saveCheckIn(event)">
-      <div class="form-grid">
-        <div class="form-group" style="margin:0">
-          <label class="form-label">日期</label>
-          <input type="date" id="ci-date" class="form-input" required>
+<body class="bg-rock-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg border-b border-rock-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl btn-primary flex items-center justify-center">
+                        <i class="fas fa-mountain text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">ClimbLog</h1>
+                        <p class="text-xs text-rock-300">攀岩记录</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportData()" class="px-4 py-2 rounded-lg bg-rock-700 hover:bg-rock-600 text-sm font-medium transition-colors">
+                        <i class="fas fa-download mr-2"></i>导出
+                    </button>
+                    <label class="px-4 py-2 rounded-lg bg-rock-700 hover:bg-rock-600 text-sm font-medium transition-colors cursor-pointer">
+                        <i class="fas fa-upload mr-2"></i>导入
+                        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(this)">
+                    </label>
+                    <button onclick="openModal('checkInModal')" class="px-4 py-2 rounded-lg btn-primary text-white text-sm font-medium">
+                        <i class="fas fa-plus mr-2"></i>打卡
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">岩馆</label>
-          <input type="text" id="ci-gym" list="gym-list" class="form-input" placeholder="输入或选择" required>
-          <datalist id="gym-list">
-            <option value="羽石"><option value="山宁芙"><option value="擎天"><option value="普岚">
-          </datalist>
-        </div>
-      </div>
-      <div class="form-grid">
-        <div class="form-group" style="margin:0">
-          <label class="form-label">活动类型</label>
-          <select id="ci-activity" class="form-input">
-            <option>爬</option><option>公开课</option><option>探馆</option>
-            <option>晚练</option><option>顶绳课</option><option>毕业啦</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">备注（可选）</label>
-          <input type="text" id="ci-note" class="form-input" placeholder="随便写点">
-        </div>
-      </div>
+    </header>
 
-      <div class="form-section">
-        <div class="section-title">
-          <span class="section-badge" style="background:#fef3c7;color:#92400e">抱石</span>
-          室内抱石 — V级系统（V0入门 → V7高级）
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-rock-800 rounded-xl p-4 card-hover border border-rock-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-rock-400 text-sm">总攀爬次数</p>
+                        <p class="text-2xl font-bold text-white" id="totalSessions">0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-climb-orange/20 flex items-center justify-center">
+                        <i class="fas fa-layer-group text-climb-orange text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-rock-800 rounded-xl p-4 card-hover border border-rock-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-rock-400 text-sm">本月打卡</p>
+                        <p class="text-2xl font-bold text-white" id="monthlySessions">0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-climb-pink/20 flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-climb-pink text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-rock-800 rounded-xl p-4 card-hover border border-rock-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-rock-400 text-sm">完成线路</p>
+                        <p class="text-2xl font-bold text-white" id="totalRoutes">0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-climb-teal/20 flex items-center justify-center">
+                        <i class="fas fa-check-circle text-climb-teal text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-rock-800 rounded-xl p-4 card-hover border border-rock-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-rock-400 text-sm">最高难度</p>
+                        <p class="text-2xl font-bold text-climb-orange" id="maxDifficulty">-</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-climb-purple/20 flex items-center justify-center">
+                        <i class="fas fa-trophy text-climb-purple text-xl"></i>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="grade-inputs cols4">
-          <div class="grade-input-item"><span class="grade-input-label v0">V0</span><input type="number" id="b-V0" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v1">V1</span><input type="number" id="b-V1" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v2">V2</span><input type="number" id="b-V2" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v3">V3</span><input type="number" id="b-V3" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v4">V4</span><input type="number" id="b-V4" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v5">V5</span><input type="number" id="b-V5" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v6">V6</span><input type="number" id="b-V6" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v6">V7</span><input type="number" id="b-V7" class="grade-number-input" min="0" value="0"></div>
-        </div>
-      </div>
 
-      <div class="form-section">
-        <div class="section-title">
-          <span class="section-badge" style="background:#ccfbf1;color:#0f766e">K板</span>
-          K板训练 — V级系统（V0入门 → V7高级）
+        <!-- Tabs -->
+        <div class="border-b border-rock-700 mb-6">
+            <nav class="flex gap-6">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-active pb-3 text-sm font-medium transition-colors">
+                    <i class="fas fa-chart-pie mr-2"></i>统计概览
+                </button>
+                <button onclick="switchTab('calendar')" id="tab-calendar" class="pb-3 text-rock-400 hover:text-white text-sm font-medium transition-colors">
+                    <i class="fas fa-calendar-alt mr-2"></i>日历视图
+                </button>
+                <button onclick="switchTab('history')" id="tab-history" class="pb-3 text-rock-400 hover:text-white text-sm font-medium transition-colors">
+                    <i class="fas fa-history mr-2"></i>历史记录
+                </button>
+                <button onclick="switchTab('routes')" id="tab-routes" class="pb-3 text-rock-400 hover:text-white text-sm font-medium transition-colors">
+                    <i class="fas fa-route mr-2"></i>线路收藏
+                </button>
+                <button onclick="switchTab('achievements')" id="tab-achievements" class="pb-3 text-rock-400 hover:text-white text-sm font-medium transition-colors">
+                    <i class="fas fa-medal mr-2"></i>成就
+                </button>
+            </nav>
         </div>
-        <div class="grade-inputs cols4">
-          <div class="grade-input-item"><span class="grade-input-label v0">K-V0</span><input type="number" id="k-KV0" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V1</span><input type="number" id="k-KV1" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V2</span><input type="number" id="k-KV2" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V3</span><input type="number" id="k-KV3" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V4</span><input type="number" id="k-KV4" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V5</span><input type="number" id="k-KV5" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V6</span><input type="number" id="k-KV6" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V7</span><input type="number" id="k-KV7" class="grade-number-input" min="0" value="0"></div>
-        </div>
-      </div>
 
-      <div class="form-section">
-        <div class="section-title">
-          <span class="section-badge" style="background:#c7d2fe;color:#3730a3">高墙</span>
-          高墙难度路线 — YDS系统（10a入门 → 14d顶级）
+        <!-- Dashboard Tab -->
+        <div id="content-dashboard" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-rock-800 rounded-xl p-6 border border-rock-700">
+                    <h3 class="text-lg font-semibold mb-4">难度分布</h3>
+                    <canvas id="difficultyChart" height="200"></canvas>
+                </div>
+                <div class="bg-rock-800 rounded-xl p-6 border border-rock-700">
+                    <h3 class="text-lg font-semibold mb-4">攀岩类型占比</h3>
+                    <canvas id="typeChart" height="200"></canvas>
+                </div>
+            </div>
+            <div class="bg-rock-800 rounded-xl p-6 border border-rock-700">
+                <h3 class="text-lg font-semibold mb-4">进步曲线</h3>
+                <canvas id="progressChart" height="100"></canvas>
+            </div>
+            <div class="bg-rock-800 rounded-xl p-6 border border-rock-700">
+                <h3 class="text-lg font-semibold mb-4">常去岩馆</h3>
+                <div id="gymStats" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+            </div>
         </div>
-        <div class="grade-inputs cols5">
-          <div class="grade-input-item"><span class="grade-input-label sport">&lt;5.10a</span><input type="number" id="s-lt10" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label sport">10a</span><input type="number" id="s-10a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label sport">10b</span><input type="number" id="s-10b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label sport">10c</span><input type="number" id="s-10c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label sport">10d</span><input type="number" id="s-10d" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s11">11a</span><input type="number" id="s-11a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s11">11b</span><input type="number" id="s-11b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s11">11c</span><input type="number" id="s-11c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s11">11d</span><input type="number" id="s-11d" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s12">12a</span><input type="number" id="s-12a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s12">12b</span><input type="number" id="s-12b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s12">12c</span><input type="number" id="s-12c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s12">12d</span><input type="number" id="s-12d" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s13">13a</span><input type="number" id="s-13a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s13">13b</span><input type="number" id="s-13b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s13">13c</span><input type="number" id="s-13c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s13">13d</span><input type="number" id="s-13d" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s14">14a</span><input type="number" id="s-14a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s14">14b</span><input type="number" id="s-14b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s14">14c</span><input type="number" id="s-14c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s14">14d</span><input type="number" id="s-14d" class="grade-number-input" min="0" value="0"></div>
+
+        <!-- Calendar Tab -->
+        <div id="content-calendar" class="hidden space-y-6">
+            <div class="bg-rock-800 rounded-xl p-6 border border-rock-700">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="changeMonth(-1)" class="p-2 rounded-lg hover:bg-rock-700">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 class="text-lg font-semibold" id="calendarMonth"></h3>
+                    <button onclick="changeMonth(1)" class="p-2 rounded-lg hover:bg-rock-700">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-7 gap-2 text-center mb-2">
+                    <div class="text-rock-400 text-sm py-2">日</div>
+                    <div class="text-rock-400 text-sm py-2">一</div>
+                    <div class="text-rock-400 text-sm py-2">二</div>
+                    <div class="text-rock-400 text-sm py-2">三</div>
+                    <div class="text-rock-400 text-sm py-2">四</div>
+                    <div class="text-rock-400 text-sm py-2">五</div>
+                    <div class="text-rock-400 text-sm py-2">六</div>
+                </div>
+                <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
+            </div>
         </div>
-      </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-gray btn-block" onclick="closeModal('modal-checkin')">取消</button>
-        <button type="submit" class="btn btn-primary btn-block">保存记录 ✓</button>
-      </div>
-    </form>
-  </div>
-</div>
+        <!-- History Tab -->
+        <div id="content-history" class="hidden space-y-4">
+            <div class="flex gap-4 mb-4">
+                <select id="filterGym" onchange="renderHistory()" class="bg-rock-800 border border-rock-700 rounded-lg px-4 py-2 text-sm">
+                    <option value="">所有岩馆</option>
+                </select>
+                <select id="filterType" onchange="renderHistory()" class="bg-rock-800 border border-rock-700 rounded-lg px-4 py-2 text-sm">
+                    <option value="">所有类型</option>
+                    <option value="boulder">室内抱石</option>
+                    <option value="kboard">K板</option>
+                    <option value="sport">高墙难度</option>
+                </select>
+            </div>
+            <div id="historyList" class="space-y-3"></div>
+        </div>
 
-<!-- Route Modal -->
-<div class="modal-overlay" id="modal-route" onclick="if(event.target===this)closeModal('modal-route')">
-  <div class="modal-box">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <span class="modal-title">🗺 添加线路</span>
-      <button class="close-btn" onclick="closeModal('modal-route')">✕</button>
+        <!-- Routes Tab -->
+        <div id="content-routes" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold">我的线路收藏</h3>
+                <button onclick="openModal('routeModal')" class="px-4 py-2 rounded-lg btn-primary text-white text-sm">
+                    <i class="fas fa-plus mr-2"></i>添加线路
+                </button>
+            </div>
+            <div id="routesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- Achievements Tab -->
+        <div id="content-achievements" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="achievementsList"></div>
+        </div>
+    </main>
+
+    <!-- Check In Modal -->
+    <div id="checkInModal" class="modal fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+        <div class="bg-rock-800 rounded-2xl p-6 w-full max-w-2xl mx-4 border border-rock-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold">打卡记录</h2>
+                <button onclick="closeModal('checkInModal')" class="text-rock-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="checkInForm" onsubmit="saveCheckIn(event)">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm text-rock-400 mb-2">日期</label>
+                        <input type="date" id="checkDate" required class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-rock-400 mb-2">岩馆</label>
+                        <input type="text" id="checkGym" list="gymList" required placeholder="选择或输入岩馆" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                        <datalist id="gymList">
+                            <option value="羽石">
+                            <option value="山宁芙">
+                            <option value="擎天">
+                            <option value="普岚">
+                        </datalist>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-rock-400 mb-2">活动类型</label>
+                    <select id="checkActivity" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                        <option value="爬">爬</option>
+                        <option value="公开课">公开课</option>
+                        <option value="探馆">探馆</option>
+                        <option value="晚练">晚练</option>
+                        <option value="顶绳课">顶绳课</option>
+                        <option value="毕业啦">毕业啦</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-rock-400 mb-2">备注</label>
+                    <input type="text" id="checkNote" placeholder="可选备注" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                </div>
+
+                <!-- Boulder Section -->
+                <div class="mb-6 p-4 bg-rock-900/50 rounded-xl border border-rock-700">
+                    <h3 class="font-semibold mb-3 flex items-center">
+                        <span class="difficulty-badge boulder-v2 mr-2">抱石</span>
+                        室内抱石 (V1-V5)
+                    </h3>
+                    <div class="grid grid-cols-5 gap-2" id="boulderInputs"></div>
+                </div>
+
+                <!-- K-Board Section -->
+                <div class="mb-6 p-4 bg-rock-900/50 rounded-xl border border-rock-700">
+                    <h3 class="font-semibold mb-3 flex items-center">
+                        <span class="difficulty-badge kboard mr-2">K板</span>
+                        K板训练
+                    </h3>
+                    <div class="grid grid-cols-4 gap-2" id="kboardInputs"></div>
+                </div>
+
+                <!-- Sport Section -->
+                <div class="mb-6 p-4 bg-rock-900/50 rounded-xl border border-rock-700">
+                    <h3 class="font-semibold mb-3 flex items-center">
+                        <span class="difficulty-badge sport mr-2">高墙</span>
+                        高墙难度
+                    </h3>
+                    <div class="grid grid-cols-5 gap-2" id="sportInputs"></div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('checkInModal')" class="flex-1 py-3 rounded-xl bg-rock-700 hover:bg-rock-600 font-medium transition-colors">
+                        取消
+                    </button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl btn-primary text-white font-medium">
+                        保存记录
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <form id="form-route" onsubmit="saveRoute(event)">
-      <div class="form-group">
-        <label class="form-label">线路名称/编号</label>
-        <input type="text" id="r-name" class="form-input" placeholder="如: 黄色V3大斜面" required>
-      </div>
-      <div class="form-grid">
-        <div class="form-group" style="margin:0">
-          <label class="form-label">类型</label>
-          <select id="r-type" class="form-input">
-            <option value="boulder">室内抱石</option>
-            <option value="kboard">K板</option>
-            <option value="sport">高墙难度</option>
-          </select>
+
+    <!-- Route Modal -->
+    <div id="routeModal" class="modal fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+        <div class="bg-rock-800 rounded-2xl p-6 w-full max-w-md mx-4 border border-rock-700">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold">添加线路</h2>
+                <button onclick="closeModal('routeModal')" class="text-rock-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="routeForm" onsubmit="saveRoute(event)">
+                <div class="mb-4">
+                    <label class="block text-sm text-rock-400 mb-2">线路名称</label>
+                    <input type="text" id="routeName" required placeholder="线路名称或编号" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm text-rock-400 mb-2">类型</label>
+                        <select id="routeType" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                            <option value="boulder">室内抱石</option>
+                            <option value="kboard">K板</option>
+                            <option value="sport">高墙难度</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-rock-400 mb-2">难度</label>
+                        <input type="text" id="routeGrade" required placeholder="如: V3" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-rock-400 mb-2">岩馆</label>
+                    <input type="text" id="routeGym" placeholder="岩馆名称" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-rock-400 mb-2">颜色/特征</label>
+                    <input type="text" id="routeColor" placeholder="如: 红色大造型" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-rock-400 mb-2">完成状态</label>
+                    <select id="routeStatus" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white">
+                        <option value="flash">Flash (一次过)</option>
+                        <option value="sent">Sent (多次尝试)</option>
+                        <option value="project">Project (未完成)</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm text-rock-400 mb-2">备注</label>
+                    <textarea id="routeNote" rows="2" placeholder="动作要点、beta等" class="w-full bg-rock-900 border border-rock-700 rounded-lg px-4 py-2 text-white resize-none"></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('routeModal')" class="flex-1 py-3 rounded-xl bg-rock-700 hover:bg-rock-600 font-medium transition-colors">
+                        取消
+                    </button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl btn-primary text-white font-medium">
+                        保存
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">难度</label>
-          <input type="text" id="r-grade" class="form-input" placeholder="如: V3" required>
-        </div>
-      </div>
-      <div class="form-grid" style="margin-top:14px">
-        <div class="form-group" style="margin:0">
-          <label class="form-label">岩馆</label>
-          <input type="text" id="r-gym" class="form-input" placeholder="岩馆名">
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">颜色/特征</label>
-          <input type="text" id="r-color" class="form-input" placeholder="如: 红色大造型">
-        </div>
-      </div>
-      <div class="form-group" style="margin-top:14px">
-        <label class="form-label">完成状态</label>
-        <select id="r-status" class="form-input">
-          <option value="flash">⚡ Flash（一次过）</option>
-          <option value="sent">✅ Sent（多次尝试）</option>
-          <option value="project">🎯 Project（未完成）</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">备注（动作要点、beta等）</label>
-        <textarea id="r-note" class="form-input" rows="2" style="resize:none" placeholder="可选"></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-gray btn-block" onclick="closeModal('modal-route')">取消</button>
-        <button type="submit" class="btn btn-primary btn-block">保存线路 ✓</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Day Detail Modal -->
-<div class="modal-overlay" id="modal-day">
-  <div class="modal-box" style="max-width:440px">
-    <div class="modal-header">
-      <span class="modal-title" id="day-modal-title">当日记录</span>
-      <button class="close-btn" onclick="closeModal('modal-day')">✕</button>
     </div>
-    <div id="day-modal-body"></div>
-  </div>
-</div>
 
-<script>
-// ============ DATA ============
-const SK = 'climblog_v2';
-let db = { sessions:[], routes:[], achievements:[] };
-let curMonth = new Date();
-
-const ACHIEVEMENTS_DEF = [
-  { id:'first', name:'初次攀岩', desc:'完成第一次打卡', icon:'🏔', check: d => d.sessions.length >= 1 },
-  { id:'5times', name:'五次达成', desc:'累计打卡5次', icon:'🔥', check: d => d.sessions.length >= 5 },
-  { id:'10times', name:'十次老将', desc:'累计打卡10次', icon:'💪', check: d => d.sessions.length >= 10 },
-  { id:'month10', name:'月度十次', desc:'单月打卡10次以上', icon:'📅', check: d => checkMonthlySessions(d.sessions,10) },
-  { id:'v3', name:'V3征服者', desc:'完成V3难度线路', icon:'⚡', check: d => checkMaxGrade(d.sessions,'V3') },
-  { id:'v4', name:'V4高手', desc:'完成V4难度线路', icon:'👑', check: d => checkMaxGrade(d.sessions,'V4') },
-  { id:'v5', name:'V5大师', desc:'完成V5难度线路', icon:'🏆', check: d => checkMaxGrade(d.sessions,'V5') },
-  { id:'gyms3', name:'探馆达人', desc:'去过3个不同岩馆', icon:'🗺', check: d => new Set(d.sessions.map(s=>s.gym)).size >= 3 },
-  { id:'routes20', name:'线路收藏家', desc:'收藏20条线路', icon:'📚', check: d => d.routes.length >= 20 },
-  { id:'routes50', name:'百线达成', desc:'累计完成50条线路', icon:'💯', check: d => countRoutes(d.sessions) >= 50 },
-];
-
-function loadDB(){
-  try{ const s=localStorage.getItem(SK); if(s) db=JSON.parse(s); }catch(e){}
-  // ensure achievements exist
-  if(!db.achievements||db.achievements.length===0){
-    db.achievements=ACHIEVEMENTS_DEF.map(a=>({...a,unlocked:false,unlockedAt:null}));
-    saveDB();
-  }
-}
-function saveDB(){ localStorage.setItem(SK,JSON.stringify(db)); }
-
-// ============ HELPERS ============
-function countRoutes(sessions){
-  return sessions.reduce((t,s)=>{
-    return t + Object.values(s.boulder||{}).reduce((a,b)=>a+b,0)
-              + Object.values(s.kboard||{}).reduce((a,b)=>a+b,0)
-              + Object.values(s.sport||{}).reduce((a,b)=>a+b,0);
-  },0);
-}
-function checkMonthlySessions(sessions,n){
-  const m={};
-  sessions.forEach(s=>{ m[s.date.slice(0,7)]=(m[s.date.slice(0,7)]||0)+1; });
-  return Object.values(m).some(c=>c>=n);
-}
-function checkMaxGrade(sessions,grade){
-  const order=['V0','V1','V2','V3','V4','V5'];
-  const ti=order.indexOf(grade);
-  return sessions.some(s=>Object.keys(s.boulder||{}).some(g=>order.indexOf(g)>=ti&&s.boulder[g]>0));
-}
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
-function fmtDate(d){ return d.toLocaleDateString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit'}); }
-
-// ============ STATS ============
-function updateStats(){
-  document.getElementById('st-total').textContent = db.sessions.length;
-  const m = new Date().toISOString().slice(0,7);
-  document.getElementById('st-monthly').textContent = db.sessions.filter(s=>s.date.startsWith(m)).length;
-  document.getElementById('st-routes').textContent = countRoutes(db.sessions);
-  const grades=['V5','V4','V3','V2','V1'];
-  let max='-';
-  for(let g of grades){ if(checkMaxGrade(db.sessions,g)){max=g;break;} }
-  document.getElementById('st-max').textContent = max;
-}
-
-// ============ CHARTS ============
-function renderDifficultyChart(){
-  const grades=['V1','V2','V3','V4','V5'];
-  const counts={V1:0,V2:0,V3:0,V4:0,V5:0};
-  db.sessions.forEach(s=>grades.forEach(g=>{ if(s.boulder&&s.boulder[g]) counts[g]+=s.boulder[g]; }));
-  const max=Math.max(...Object.values(counts),1);
-  const colors={V1:'#3b82f6',V2:'#f59e0b',V3:'#f97316',V4:'#ef4444',V5:'#8b5cf6'};
-  const html=grades.map(g=>`
-    <div class="bar-row">
-      <span class="bar-label">${g}</span>
-      <div class="bar-outer"><div class="bar-inner" style="width:${(counts[g]/max*100).toFixed(1)}%;background:${colors[g]}"></div></div>
-      <span class="bar-count">${counts[g]}</span>
-    </div>
-  `).join('');
-  document.getElementById('difficulty-chart').innerHTML = `<div class="bar-chart-wrap">${html}</div>`;
-}
-
-function renderTypeChart(){
-  let b=0,k=0,s=0;
-  db.sessions.forEach(ss=>{
-    b+=Object.values(ss.boulder||{}).reduce((a,c)=>a+c,0);
-    k+=Object.values(ss.kboard||{}).reduce((a,c)=>a+c,0);
-    s+=Object.values(ss.sport||{}).reduce((a,c)=>a+c,0);
-  });
-  const total=b+k+s||1;
-  const data=[{label:'室内抱石',val:b,color:'#f97316'},{label:'K板',val:k,color:'#14b8a6'},{label:'高墙难度',val:s,color:'#8b5cf6'}];
-  
-  // Simple SVG donut
-  const r=60, cx=70, cy=70, stroke=22;
-  const circ=2*Math.PI*r;
-  let offset=0;
-  const segs=data.map(d=>{
-    const pct=d.val/total;
-    const dash=circ*pct;
-    const gap=circ*(1-pct);
-    const seg=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.color}" stroke-width="${stroke}" stroke-dasharray="${dash.toFixed(2)} ${gap.toFixed(2)}" stroke-dashoffset="${(-offset*circ).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"></circle>`;
-    offset+=pct;
-    return seg;
-  }).join('');
-  
-  const legend=data.map(d=>`
-    <div class="legend-item">
-      <div class="legend-dot" style="background:${d.color}"></div>
-      <span>${d.label}</span>
-      <span style="margin-left:auto;color:#78716c">${d.val}</span>
-    </div>
-  `).join('');
-  
-  document.getElementById('type-chart').innerHTML = `
-    <div class="donut-wrap">
-      <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#292524" stroke-width="${stroke}"></circle>
-        ${total>0?segs:''}
-        <text x="${cx}" y="${cy+5}" text-anchor="middle" fill="#d6d3d1" font-size="14" font-weight="700">${total}</text>
-      </svg>
-      <div class="donut-legend">${legend}</div>
-    </div>
-  `;
-}
-
-function renderProgressChart(){
-  if(db.sessions.length===0){
-    document.getElementById('progress-chart').innerHTML='<div class="chart-placeholder">📈 打卡后自动生成</div>';
-    return;
-  }
-  // Group by week
-  const weeks={};
-  db.sessions.forEach(s=>{
-    const d=new Date(s.date);
-    const y=d.getFullYear();
-    const w=Math.ceil((d.getDate()+new Date(y,d.getMonth(),1).getDay())/7);
-    const k=`${y}-${String(d.getMonth()+1).padStart(2,'0')}-W${w}`;
-    weeks[k]=(weeks[k]||0)+countRoutes([s]);
-  });
-  const labels=Object.keys(weeks).sort().slice(-12);
-  const vals=labels.map(k=>weeks[k]);
-  const maxV=Math.max(...vals,1);
-  
-  const W=560, H=140, pad=36, gw=W-pad*2, gh=H-pad*1.5;
-  const pts=labels.map((l,i)=>{
-    const x=pad+i*(gw/(labels.length-1||1));
-    const y=H-pad-(vals[i]/maxV*gh);
-    return {x,y,v:vals[i],l};
-  });
-  
-  // Grid lines
-  const gridLines=[0,0.25,0.5,0.75,1].map(p=>{
-    const y=H-pad-p*gh;
-    const v=Math.round(p*maxV);
-    return `<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#292524" stroke-width="1"/>
-            <text x="${pad-4}" y="${y+4}" text-anchor="end" fill="#57534e" font-size="10">${v}</text>`;
-  }).join('');
-  
-  // Gradient area
-  const pathD=pts.map((p,i)=>(i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`)).join(' ');
-  const areaD=pathD+` L${pts[pts.length-1].x},${H-pad} L${pts[0].x},${H-pad} Z`;
-  
-  // X labels (show every 2nd)
-  const xLabels=pts.map((p,i)=>i%2===0?`<text x="${p.x}" y="${H-4}" text-anchor="middle" fill="#57534e" font-size="9">${p.l.slice(5)}</text>`:'').join('');
-  
-  // Dots
-  const dots=pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#f97316" stroke="#1c1917" stroke-width="2"/>`).join('');
-  
-  document.getElementById('progress-chart').innerHTML=`
-    <div class="line-chart-wrap">
-      <svg class="line-chart-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-        <defs><linearGradient id="areag" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#f97316" stop-opacity="0.3"/>
-          <stop offset="100%" stop-color="#f97316" stop-opacity="0.0"/>
-        </linearGradient></defs>
-        ${gridLines}
-        <path d="${areaD}" fill="url(#areag)"/>
-        <path d="${pathD}" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-        ${dots}
-        ${xLabels}
-      </svg>
-    </div>
-  `;
-}
-
-function renderGymStats(){
-  const gc={};
-  db.sessions.forEach(s=>{ gc[s.gym]=(gc[s.gym]||0)+1; });
-  const sorted=Object.entries(gc).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  if(sorted.length===0){
-    document.getElementById('gym-stats').innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🏢</div>暂无数据</div>';
-    return;
-  }
-  document.getElementById('gym-stats').innerHTML=sorted.map(([g,c])=>`
-    <div class="gym-card">
-      <div class="gym-count">${c}</div>
-      <div class="gym-name">${g}</div>
-    </div>
-  `).join('');
-}
-
-function renderDashboard(){
-  renderDifficultyChart();
-  renderTypeChart();
-  renderProgressChart();
-  renderGymStats();
-}
-
-// ============ CALENDAR ============
-function renderCalendar(){
-  const y=curMonth.getFullYear(), m=curMonth.getMonth();
-  document.getElementById('cal-title').textContent=`${y}年${m+1}月`;
-  const firstDay=new Date(y,m,1).getDay();
-  const days=new Date(y,m+1,0).getDate();
-  const today=new Date();
-  
-  const msessions=db.sessions.filter(s=>{
-    const d=new Date(s.date); return d.getFullYear()===y&&d.getMonth()===m;
-  });
-  const sdayMap={};
-  msessions.forEach(s=>{ const d=parseInt(s.date.split('-')[2]); sdayMap[d]=(sdayMap[d]||0)+countRoutes([s]); });
-  
-  let html='';
-  for(let i=0;i<firstDay;i++) html+='<div class="cal-day empty"></div>';
-  for(let d=1;d<=days;d++){
-    const isToday=today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===d;
-    const hasSess=sdayMap[d]>0;
-    html+=`<div class="cal-day${hasSess?' has-session':''}${isToday?' today':''}" onclick="showDayDetail(${y},${m},${d})">
-      <span>${d}</span>
-      ${hasSess?`<span class="route-count">${sdayMap[d]}</span>`:''}
-    </div>`;
-  }
-  document.getElementById('cal-grid').innerHTML=html;
-}
-function changeMonth(d){ curMonth.setMonth(curMonth.getMonth()+d); renderCalendar(); }
-
-function showDayDetail(y,m,day){
-  const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-  const ss=db.sessions.filter(s=>s.date===ds);
-  if(!ss.length) return;
-  document.getElementById('day-modal-title').textContent=`${ds} 的记录`;
-  document.getElementById('day-modal-body').innerHTML=ss.map(s=>`
-    <div style="background:#0c0a09;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid #292524">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div>
-          <strong>${s.gym}</strong>
-          <span style="color:#a8a29e;font-size:13px;margin-left:8px">${s.activity}</span>
-        </div>
-        <button onclick="deleteSession('${s.id}');closeModal('modal-day')" style="background:rgba(127,29,29,.3);color:#f87171;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:12px">删除</button>
-      </div>
-      ${renderGradeChips(s)}
-      ${s.note?`<div style="color:#78716c;font-size:12px;margin-top:6px">📝 ${s.note}</div>`:''}
-    </div>
-  `).join('');
-  openModal('modal-day');
-}
-
-// ============ HISTORY ============
-function renderHistory(){
-  const gymF=document.getElementById('filter-gym').value;
-  const typeF=document.getElementById('filter-type').value;
-  
-  // Update gym filter options
-  const gyms=[...new Set(db.sessions.map(s=>s.gym))];
-  const sel=document.getElementById('filter-gym');
-  const curVal=gymF;
-  sel.innerHTML='<option value="">所有岩馆</option>'+gyms.map(g=>`<option value="${g}"${g===curVal?' selected':''}>${g}</option>`).join('');
-  
-  let sessions=[...db.sessions].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  if(gymF) sessions=sessions.filter(s=>s.gym===gymF);
-  if(typeF) sessions=sessions.filter(s=>Object.values(s[typeF]||{}).some(v=>v>0));
-  
-  if(!sessions.length){
-    document.getElementById('history-list').innerHTML='<div class="empty"><div class="empty-icon">📋</div>暂无记录</div>';
-    return;
-  }
-  document.getElementById('history-list').innerHTML=sessions.map(s=>`
-    <div class="history-item" onclick="showSessionDetail('${s.id}')">
-      <div class="history-header">
-        <div>
-          <span class="history-date">${s.date}</span>
-          <span class="history-gym">${s.gym}</span>
-        </div>
-        <div class="history-actions" onclick="event.stopPropagation()">
-          <button class="btn btn-gray btn-icon btn-sm" onclick="editSession('${s.id}')" title="编辑">✏️</button>
-          <button class="btn btn-danger btn-icon btn-sm" onclick="deleteSession('${s.id}')" title="删除">🗑</button>
-        </div>
-      </div>
-      <div class="history-activity">📌 ${s.activity}</div>
-      ${renderGradeChips(s)}
-      ${s.note?`<div class="note-text">📝 ${s.note}</div>`:''}
-    </div>
-  `).join('');
-}
-
-function renderGradeChips(s){
-  const chips=[];
-  // 抱石等级颜色映射（V0-V7）
-  const bc={
-    V0:'grade-v0',V1:'grade-v1',V2:'grade-v2',V3:'grade-v3',
-    V4:'grade-v4',V5:'grade-v5',V6:'grade-v6',V7:'grade-v6'
-  };
-  Object.entries(s.boulder||{}).forEach(([g,c])=>{ if(c>0) chips.push(`<span class="grade-chip ${bc[g]||'grade-v1'}">${g}×${c}</span>`); });
-  Object.entries(s.kboard||{}).forEach(([g,c])=>{ if(c>0) chips.push(`<span class="grade-chip grade-k">${g.replace('KV','K-V')}×${c}</span>`); });
-  // 高墙等级颜色（10a-14d + lt10）
-  const sc=(g)=>{const n=parseInt(g.replace(/[^0-9]/g,''));return n>=14?'grade-s14':n>=13?'grade-s13':n>=12?'grade-s12':n>=11?'grade-s11':'grade-s';};
-  Object.entries(s.sport||{}).forEach(([g,c])=>{ 
-    if(c>0) {
-      const label = g==='lt10'?'<5.10a':'5.'+g;
-      chips.push(`<span class="grade-chip ${sc(g)}">${label}×${c}</span>`); 
-    }
-  });
-  return chips.length?`<div class="grades-row">${chips.join('')}</div>`:'';
-}
-
-// ============ CHECK-IN ============
-function openCheckIn(){
-  // reset form
-  document.getElementById('form-checkin').onsubmit=saveCheckIn;
-  document.getElementById('ci-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('ci-gym').value='';
-  document.getElementById('ci-activity').value='爬';
-  document.getElementById('ci-note').value='';
-  ['V0','V1','V2','V3','V4','V5','V6','V7'].forEach(g=>document.getElementById('b-'+g).value=0);
-  ['KV0','KV1','KV2','KV3','KV4','KV5','KV6','KV7'].forEach(g=>document.getElementById('k-'+g).value=0);
-  ['lt10','10a','10b','10c','10d','11a','11b','11c','11d','12a','12b','12c','12d','13a','13b','13c','13d','14a','14b','14c','14d'].forEach(g=>document.getElementById('s-'+g).value=0);
-  openModal('modal-checkin');
-}
-
-function saveCheckIn(e){
-  e.preventDefault();
-  const sess={
-    id:uid(), date:document.getElementById('ci-date').value,
-    gym:document.getElementById('ci-gym').value,
-    activity:document.getElementById('ci-activity').value,
-    note:document.getElementById('ci-note').value,
-    createdAt:new Date().toISOString(),
-    boulder:{}, kboard:{}, sport:{}
-  };
-  ['V0','V1','V2','V3','V4','V5','V6','V7'].forEach(g=>{ const v=parseInt(document.getElementById('b-'+g).value)||0; if(v>0) sess.boulder[g]=v; });
-  ['KV0','KV1','KV2','KV3','KV4','KV5','KV6','KV7'].forEach(g=>{ const v=parseInt(document.getElementById('k-'+g).value)||0; if(v>0) sess.kboard[g]=v; });
-  ['lt10','10a','10b','10c','10d','11a','11b','11c','11d','12a','12b','12c','12d','13a','13b','13c','13d','14a','14b','14c','14d'].forEach(g=>{ const v=parseInt(document.getElementById('s-'+g).value)||0; if(v>0) sess.sport[g]=v; });
-  
-  db.sessions.push(sess);
-  saveDB();
-  closeModal('modal-checkin');
-  refreshAll();
-  const ach=checkAchievements();
-  if(!ach.length) notify('✅ 打卡成功！','success');
-}
-
-function editSession(id){
-  const s=db.sessions.find(x=>x.id===id);
-  if(!s) return;
-  document.getElementById('ci-date').value=s.date;
-  document.getElementById('ci-gym').value=s.gym;
-  document.getElementById('ci-activity').value=s.activity;
-  document.getElementById('ci-note').value=s.note||'';
-  ['V0','V1','V2','V3','V4','V5','V6','V7'].forEach(g=>document.getElementById('b-'+g).value=s.boulder[g]||0);
-  ['KV0','KV1','KV2','KV3','KV4','KV5','KV6','KV7'].forEach(g=>document.getElementById('k-'+g).value=s.kboard[g]||0);
-  ['lt10','10a','10b','10c','10d','11a','11b','11c','11d','12a','12b','12c','12d','13a','13b','13c','13d','14a','14b','14c','14d'].forEach(g=>document.getElementById('s-'+g).value=s.sport[g]||0);
-  document.getElementById('form-checkin').onsubmit=function(e){
-    e.preventDefault();
-    db.sessions=db.sessions.filter(x=>x.id!==id);
-    saveDB();
-    saveCheckIn(e);
-  };
-  openModal('modal-checkin');
-}
-
-function deleteSession(id){
-  if(!confirm('确定删除这条记录？')) return;
-  db.sessions=db.sessions.filter(s=>s.id!==id);
-  saveDB();
-  refreshAll();
-  notify('已删除','info');
-}
-
-function showSessionDetail(id){
-  const s=db.sessions.find(x=>x.id===id);
-  if(!s) return;
-  document.getElementById('day-modal-title').textContent=`${s.date} 打卡详情`;
-  document.getElementById('day-modal-body').innerHTML=`
-    <div style="background:#0c0a09;border-radius:12px;padding:16px;border:1px solid #292524">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div>
-          <strong style="font-size:16px">${s.gym}</strong>
-          <span style="color:#a8a29e;font-size:13px;margin-left:8px">${s.activity}</span>
-        </div>
-      </div>
-      ${renderGradeChips(s)}
-      ${s.note?`<div style="color:#78716c;font-size:13px;margin-top:10px;padding-top:10px;border-top:1px solid #292524">📝 ${s.note}</div>`:''}
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-gray btn-block" onclick="closeModal('modal-day');editSession('${s.id}')" style="flex:1">✏️ 编辑</button>
-        <button class="btn btn-danger btn-block" onclick="closeModal('modal-day');deleteSession('${s.id}')" style="flex:1">🗑 删除</button>
-      </div>
-    </div>
-  `;
-  openModal('modal-day');
-}
-
-// ============ ROUTES ============
-function openRouteModal(){
-  document.getElementById('form-route').onsubmit=saveRoute;
-  document.getElementById('r-name').value='';
-  document.getElementById('r-grade').value='';
-  document.getElementById('r-gym').value='';
-  document.getElementById('r-color').value='';
-  document.getElementById('r-note').value='';
-  document.getElementById('r-type').value='boulder';
-  document.getElementById('r-status').value='flash';
-  openModal('modal-route');
-}
-
-function saveRoute(e){
-  e.preventDefault();
-  const r={
-    id:uid(), name:document.getElementById('r-name').value,
-    type:document.getElementById('r-type').value,
-    grade:document.getElementById('r-grade').value,
-    gym:document.getElementById('r-gym').value,
-    color:document.getElementById('r-color').value,
-    status:document.getElementById('r-status').value,
-    note:document.getElementById('r-note').value,
-    createdAt:new Date().toISOString()
-  };
-  db.routes.push(r);
-  saveDB();
-  closeModal('modal-route');
-  renderRoutes();
-  checkAchievements();
-  notify('✅ 线路已添加','success');
-}
-
-function editRoute(id){
-  const r=db.routes.find(x=>x.id===id);
-  if(!r) return;
-  document.getElementById('r-name').value=r.name;
-  document.getElementById('r-type').value=r.type;
-  document.getElementById('r-grade').value=r.grade;
-  document.getElementById('r-gym').value=r.gym||'';
-  document.getElementById('r-color').value=r.color||'';
-  document.getElementById('r-status').value=r.status;
-  document.getElementById('r-note').value=r.note||'';
-  document.getElementById('form-route').onsubmit=function(e){
-    e.preventDefault();
-    db.routes=db.routes.filter(x=>x.id!==id);
-    saveDB();
-    saveRoute(e);
-  };
-  openModal('modal-route');
-}
-
-function deleteRoute(id){
-  if(!confirm('确定删除这条线路？')) return;
-  db.routes=db.routes.filter(r=>r.id!==id);
-  saveDB();
-  renderRoutes();
-  notify('已删除','info');
-}
-
-function renderRoutes(){
-  if(!db.routes.length){
-    document.getElementById('routes-list').innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🗺</div>还没有收藏线路</div>';
-    return;
-  }
-  const statusMap={flash:'status-flash ⚡',sent:'status-sent ✅',project:'status-project 🎯'};
-  const typeColors={boulder:'grade-v3',kboard:'grade-k',sport:'grade-s'};
-  document.getElementById('routes-list').innerHTML=db.routes.map(r=>`
-    <div class="route-card">
-      <div class="route-name">${r.name}</div>
-      <div class="route-meta">
-        <span class="grade-badge ${typeColors[r.type]||'grade-v1'}">${r.grade}</span>
-        <span class="${statusMap[r.status].split(' ')[0]}">${statusMap[r.status]}</span>
-      </div>
-      ${r.gym?`<div style="font-size:12px;color:#78716c">🏢 ${r.gym}</div>`:''}
-      ${r.color?`<div style="font-size:12px;color:#a8a29e">🎨 ${r.color}</div>`:''}
-      ${r.note?`<div style="font-size:12px;color:#78716c;margin-top:6px">📝 ${r.note}</div>`:''}
-      <div class="route-actions">
-        <button class="btn btn-gray btn-sm" style="flex:1" onclick="editRoute('${r.id}')">✏️ 编辑</button>
-        <button class="btn btn-danger btn-sm" style="flex:1" onclick="deleteRoute('${r.id}')">🗑 删除</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ============ ACHIEVEMENTS ============
-function renderAchievements(){
-  document.getElementById('ach-list').innerHTML=db.achievements.map(a=>`
-    <div class="ach-card${a.unlocked?' unlocked':''}">
-      <div class="ach-icon">${a.icon}</div>
-      <div style="flex:1;min-width:0">
-        <div class="ach-name">${a.name}</div>
-        <div class="ach-desc">${a.desc}</div>
-        ${a.unlocked&&a.unlockedAt?`<div class="ach-date">🔓 ${new Date(a.unlockedAt).toLocaleDateString()}</div>`:''}
-      </div>
-      <div class="ach-status">${a.unlocked?'✅':'🔒'}</div>
-    </div>
-  `).join('');
-}
-
-function checkAchievements(){
-  const newOnes=[];
-  db.achievements.forEach(a=>{
-    const def=ACHIEVEMENTS_DEF.find(x=>x.id===a.id);
-    if(!a.unlocked&&def&&def.check(db)){
-      a.unlocked=true; a.unlockedAt=new Date().toISOString();
-      newOnes.push(a);
-    }
-  });
-  if(newOnes.length){ saveDB(); renderAchievements(); notifyAchievements(newOnes); }
-  return newOnes;
-}
-
-function notifyAchievements(list){
-  list.forEach((a,i)=>setTimeout(()=>{
-    const n=document.createElement('div');
-    n.className='notif notif-ach';
-    n.innerHTML=`<strong>🎉 成就解锁：${a.name}</strong><br><small>${a.desc}</small>`;
-    document.body.appendChild(n);
-    setTimeout(()=>n.remove(),4000);
-  },i*600));
-}
-
-// ============ IMPORT / EXPORT ============
-function exportData(){
-  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download=`climblog_${new Date().toISOString().split('T')[0]}.json`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  notify('✅ 数据已导出','success');
-}
-
-function importData(input){
-  const file=input.files[0];
-  if(!file) return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      const imp=JSON.parse(e.target.result);
-      if(confirm(`导入将覆盖当前 ${db.sessions.length} 条记录，确定吗？`)){
-        db=imp;
-        saveDB();
-        refreshAll();
-        notify('✅ 导入成功','success');
-      }
-    }catch(err){ notify('❌ 文件格式错误','error'); }
-  };
-  reader.readAsText(file);
-  input.value='';
-}
-
-// ============ UI UTILS ============
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-
-function switchTab(name, btn){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.bottom-nav-item').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  if(btn) btn.classList.add('active');
-  // Sync active state between desktop tabs and mobile nav
-  document.querySelectorAll('.tab[data-tab="'+name+'"], .bottom-nav-item[data-tab="'+name+'"]').forEach(el=>el.classList.add('active'));
-  if(name==='dashboard') renderDashboard();
-  if(name==='calendar') renderCalendar();
-  if(name==='history') renderHistory();
-  if(name==='routes') renderRoutes();
-  if(name==='achievements') renderAchievements();
-}
-
-function notify(msg, type){
-  const n=document.createElement('div');
-  n.className=`notif notif-${type}`;
-  n.textContent=msg;
-  document.body.appendChild(n);
-  setTimeout(()=>n.remove(),3000);
-}
-
-function refreshAll(){
-  updateStats();
-  renderDashboard();
-  renderCalendar();
-  renderHistory();
-}
-
-// Close modal on overlay click
-document.querySelectorAll('.modal-overlay').forEach(m=>{
-  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
-});
-
-// ============ INIT ============
-loadDB();
-updateStats();
-renderDashboard();
-renderCalendar();
-renderHistory();
-renderRoutes();
-renderAchievements();
-</script>
+    <script src="app.js"></script>
 </body>
 </html>
