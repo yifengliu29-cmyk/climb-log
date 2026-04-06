@@ -5,178 +5,325 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#f97316">
 
-<title>ClimbLog - 攀岩记录</title>
+<title>猫爬架</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root{
+  --orange:#f97316;
+  --orange-light:#fff7ed;
+  --orange-mid:#fed7aa;
+  --bg:#f8f4f0;
+  --bg2:#fff;
+  --surface:rgba(255,255,255,0.72);
+  --surface2:rgba(255,255,255,0.55);
+  --border:rgba(249,115,22,0.12);
+  --border2:rgba(0,0,0,0.07);
+  --text:#1a1209;
+  --text2:#6b5e52;
+  --text3:#a89080;
+  --shadow:0 4px 24px rgba(249,115,22,0.08),0 1px 4px rgba(0,0,0,0.06);
+  --shadow-lg:0 12px 40px rgba(249,115,22,0.14),0 2px 8px rgba(0,0,0,0.08);
+}
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0c0a09;color:#fff;min-height:100vh;padding-bottom:80px}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse at 20% 0%,rgba(249,115,22,.10) 0%,transparent 60%),
+    radial-gradient(ellipse at 80% 100%,rgba(249,115,22,.07) 0%,transparent 50%);
+  background-attachment:fixed;
+  color:var(--text);
+  min-height:100vh;
+  padding-bottom:80px;
+}
 a{color:inherit;text-decoration:none}
 button{cursor:pointer;border:none;outline:none;font-family:inherit}
-input,select,textarea{font-family:inherit;outline:none;color:#fff}
-input::-webkit-calendar-picker-indicator{filter:invert(1)}
+input,select,textarea{font-family:inherit;outline:none;color:var(--text)}
+input::-webkit-calendar-picker-indicator{opacity:.5}
 
-/* Mobile App Layout */
-.header{background:linear-gradient(135deg,#1c1917,#292524,#44403c);border-bottom:1px solid #44403c;position:fixed;top:0;left:0;right:0;z-index:50;padding-top:env(safe-area-inset-top)}
-.header-inner{max-width:100%;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;height:56px}
+/* ── Header ── */
+.header{
+  background:rgba(255,255,255,0.80);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  padding-top:env(safe-area-inset-top);
+  box-shadow:0 2px 20px rgba(249,115,22,.08);
+}
+.header-inner{max-width:100%;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;height:56px}
 .logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#f97316,#ec4899);display:flex;align-items:center;justify-content:center;font-size:16px}
-.logo-text h1{font-size:17px;font-weight:700}
-.logo-text p{font-size:10px;color:#a8a29e}
-.header-actions{display:flex;gap:8px}
-.main{max-width:min(430px,100%);width:100%;margin:0 auto;padding:76px 12px 20px;min-height:100vh}
+.logo-icon{
+  width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(135deg,#ff8c42,#f97316);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 12px rgba(249,115,22,.35);
+}
+.logo-text h1{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.logo-text p{font-size:10px;color:var(--text3);margin-top:1px}
+.header-actions{display:flex;gap:6px}
+.main{max-width:min(430px,100%);width:100%;margin:0 auto;padding:74px 12px 20px;min-height:100vh}
 
-/* Bottom Navigation - Mobile App Style */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1c1917;border-top:1px solid #292524;display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
-.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;background:none;border:none;color:#78716c;font-size:11px;transition:all .2s}
-.bottom-nav-item.active{color:#f97316}
-.bottom-nav-item .nav-icon{font-size:22px}
+/* ── Bottom Nav ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+  z-index:100;
+  box-shadow:0 -2px 20px rgba(249,115,22,.06);
+}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;background:none;border:none;color:var(--text3);font-size:10px;font-weight:500;transition:all .2s;cursor:pointer}
+.bottom-nav-item.active{color:var(--orange)}
+.bottom-nav-item .nav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.bottom-nav-item.active .nav-icon svg{stroke:var(--orange)}
 
-/* FAB - Floating Action Button */
-.fab{position:fixed;bottom:90px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ec4899);color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(249,115,22,.4);z-index:90;transition:transform .2s}
-.fab:active{transform:scale(.95)}
+/* ── FAB ── */
+.fab{
+  position:fixed;bottom:88px;right:18px;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,#ff9048,#f97316);
+  color:#fff;font-size:26px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 24px rgba(249,115,22,.45);
+  z-index:90;transition:transform .2s,box-shadow .2s;
+}
+.fab:active{transform:scale(.94);box-shadow:0 3px 12px rgba(249,115,22,.35)}
 
-/* Buttons - Mobile optimized */
-.btn{padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
-.btn-gray{background:#292524;color:#d6d3d1;border:1px solid #44403c}
-.btn-gray:active{background:#44403c}
-.btn-primary{background:linear-gradient(135deg,#f97316,#ec4899);color:#fff}
-.btn-primary:active{opacity:.9;transform:scale(.98)}
-.btn-sm{padding:8px 12px;font-size:12px}
-.btn-danger{background:rgba(127,29,29,.4);color:#f87171}
-.btn-danger:active{background:rgba(127,29,29,.6)}
-.btn-icon{width:40px;height:40px;padding:0;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
+/* ── Buttons ── */
+.btn{padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.btn-gray{background:rgba(255,255,255,0.8);color:var(--text2);border:1px solid var(--border2);backdrop-filter:blur(8px)}
+.btn-gray:active{background:rgba(249,115,22,.08);border-color:var(--orange)}
+.btn-primary{background:linear-gradient(135deg,#ff9048,#f97316);color:#fff;border:none;box-shadow:0 3px 12px rgba(249,115,22,.3)}
+.btn-primary:active{opacity:.92;transform:scale(.98)}
+.btn-sm{padding:7px 12px;font-size:12px}
+.btn-danger{background:rgba(254,226,226,.6);color:#c0392b;border:1px solid rgba(192,57,43,.15)}
+.btn-danger:active{background:rgba(254,202,202,.8)}
+.btn-icon{width:38px;height:38px;padding:0;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:15px}
+label.btn-icon{display:inline-flex;vertical-align:middle;box-sizing:border-box;overflow:hidden}
+.btn-icon svg{pointer-events:none}
 
-/* Cards */
-.card{background:#1c1917;border:1px solid #292524;border-radius:12px;padding:16px;overflow:hidden;box-sizing:border-box}
-.card-hover{transition:all .3s}
-.card-hover:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+/* ── Cards ── */
+.card{
+  background:var(--surface);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.7);
+  box-shadow:var(--shadow);
+  border-radius:16px;padding:16px;overflow:hidden;box-sizing:border-box;
+}
+.card-hover{transition:all .25s}
+.card-hover:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 
-/* Stats Grid - Mobile optimized */
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
-.stat-card{background:#1c1917;border:1px solid #292524;border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center}
-.stat-label{font-size:11px;color:#a8a29e;margin-bottom:2px}
-.stat-value{font-size:22px;font-weight:700}
-.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.icon-orange{background:rgba(249,115,22,.2);color:#f97316}
-.icon-pink{background:rgba(236,72,153,.2);color:#ec4899}
-.icon-teal{background:rgba(20,184,166,.2);color:#14b8a6}
-.icon-purple{background:rgba(139,92,246,.2);color:#8b5cf6}
+/* ── Stats Grid ── */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.stat-card{
+  background:var(--surface);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.75);
+  box-shadow:var(--shadow);
+  border-radius:16px;padding:14px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.stat-label{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:500}
+.stat-value{font-size:24px;font-weight:700;color:var(--text)}
+.stat-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.icon-orange{background:linear-gradient(135deg,#fff7ed,#fed7aa);color:var(--orange)}
+.icon-pink{background:linear-gradient(135deg,#fff0f6,#ffd6e8);color:#e05a8a}
+.icon-teal{background:linear-gradient(135deg,#f0fdfb,#ccfbf1);color:#0d9488}
+.icon-purple{background:linear-gradient(135deg,#faf5ff,#e9d5ff);color:#7c3aed}
 
-/* Tabs - Hidden on mobile, use bottom nav instead */
-.tabs{display:none;margin-bottom:16px;border-bottom:1px solid #292524;gap:4px;overflow-x:auto;padding:0 4px}
-.tab{padding:10px 14px;font-size:13px;font-weight:500;color:#78716c;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.tab:hover{color:#d6d3d1}
-.tab.active{color:#f97316;border-bottom-color:#f97316}
+/* ── Tabs (Desktop) ── */
+.tabs{display:none;margin-bottom:16px;border-bottom:1.5px solid var(--border2);gap:0;overflow-x:auto;padding:0}
+.tab{padding:10px 16px;font-size:13px;font-weight:500;color:var(--text3);background:none;border:none;border-bottom:2.5px solid transparent;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap;margin-bottom:-1.5px}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange);font-weight:600}
 @media(min-width:768px){.tabs{display:flex}}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
-/* Charts - Mobile single column */
+/* ── Charts ── */
 .charts-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
 .chart-container{position:relative}
 canvas{max-width:100%}
-.chart-placeholder{display:flex;align-items:center;justify-content:center;height:180px;color:#57534e;flex-direction:column;gap:8px;font-size:14px}
+.chart-placeholder{display:flex;align-items:center;justify-content:center;height:160px;color:var(--text3);flex-direction:column;gap:8px;font-size:13px}
 
-/* Calendar - Mobile optimized */
+/* ── Calendar ── */
 .calendar-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.calendar-title{font-size:15px;font-weight:600}
-.calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px;text-align:center;width:100%;min-width:0}
-.calendar-weekdays span{font-size:11px;color:#78716c;padding:4px 0;min-width:0}
-.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;width:100%;min-width:0}
-.cal-day{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:12px;background:#1c1917;color:#a8a29e;transition:all .2s;border:1px solid transparent;min-width:0;overflow:hidden}
-.cal-day:active{background:#292524}
-.cal-day.has-session{background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.4);color:#f97316;font-weight:700}
-.cal-day.today{border-color:#f97316}
-.cal-day .route-count{font-size:9px;color:#f97316;line-height:1}
-.cal-day .gym-name{font-size:8px;color:#a8a29e;line-height:1;margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cal-day.empty{background:transparent;cursor:default}
+.calendar-title{font-size:15px;font-weight:700;color:var(--text)}
+.calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;text-align:center;width:100%;min-width:0}
+.calendar-weekdays span{font-size:11px;color:var(--text3);padding:4px 0;font-weight:600;min-width:0}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;width:100%;min-width:0}
+.cal-day{
+  aspect-ratio:1;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;font-size:12px;font-weight:500;
+  background:rgba(255,255,255,0.55);
+  color:var(--text2);
+  transition:all .2s;border:1px solid transparent;
+  min-width:0;overflow:hidden;
+}
+.cal-day:active{background:rgba(249,115,22,.12)}
+.cal-day.has-session{
+  background:linear-gradient(135deg,rgba(255,237,213,.85),rgba(254,215,170,.7));
+  border-color:rgba(249,115,22,.35);
+  color:var(--orange);font-weight:700;
+  box-shadow:0 2px 8px rgba(249,115,22,.15);
+}
+.cal-day.today{border-color:var(--orange);border-width:1.5px}
+.cal-day .route-count{font-size:9px;color:var(--orange);line-height:1;font-weight:700}
+.cal-day .gym-name{font-size:8px;color:var(--text3);line-height:1;margin-top:1px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-day.empty{background:transparent;cursor:default;color:var(--text3);opacity:.4}
 
-/* History - Mobile swipeable cards */
-.filter-bar{display:flex;gap:10px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
-.filter-bar select{background:#1c1917;border:1px solid #292524;border-radius:10px;padding:10px 14px;font-size:13px;color:#d6d3d1;min-width:120px}
-.history-item{background:#1c1917;border:1px solid #292524;border-radius:14px;padding:16px;margin-bottom:12px;transition:all .2s;position:relative;overflow:hidden}
-.history-item:active{transform:scale(.98)}
-.history-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.history-date{font-size:15px;font-weight:600}
-.history-gym{color:#a8a29e;font-size:12px;margin-left:6px}
-.history-actions{display:flex;gap:8px}
-.history-activity{font-size:12px;color:#f97316;margin-bottom:6px}
-.grades-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.grade-chip{padding:3px 8px;border-radius:6px;font-size:12px;font-weight:600}
+/* ── History ── */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.filter-bar select{
+  background:var(--surface);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--border2);
+  border-radius:10px;padding:9px 12px;
+  font-size:13px;color:var(--text2);min-width:110px;
+  box-shadow:var(--shadow);
+}
+.history-item{
+  background:var(--surface);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.7);
+  box-shadow:var(--shadow);
+  border-radius:16px;padding:16px;margin-bottom:10px;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.history-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,#ff9048,#f97316);border-radius:0 2px 2px 0;opacity:.6}
+.history-item:active{transform:scale(.99)}
+.history-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.history-date{font-size:14px;font-weight:700;color:var(--text)}
+.history-gym{color:var(--text3);font-size:12px;margin-left:6px;font-weight:500}
+.history-actions{display:flex;gap:6px}
+.history-activity{font-size:12px;color:var(--orange);margin-bottom:6px;font-weight:600}
+.grades-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.grade-chip{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
 .grade-v0{background:#dcfce7;color:#166534}
-.grade-v1{background:#dbeafe;color:#1e40af}
-.grade-v2{background:#fef3c7;color:#92400e}
-.grade-v3{background:#fed7aa;color:#9a3412}
-.grade-v4{background:#fecaca;color:#991b1b}
-.grade-v5{background:#e9d5ff;color:#6b21a8}
+.grade-v1{background:#ffedd5;color:#c2410c}
+.grade-v2{background:#fed7aa;color:#ea580c}
+.grade-v3{background:#fdba74;color:#f97316}
+.grade-v4{background:#fb923c;color:#dc2626}
+.grade-v5{background:#f87171;color:#b91c1c}
 .grade-v6{background:#f5d0fe;color:#86198f}
 .grade-v7{background:#ffddd5;color:#7c2d12}
 .grade-v8{background:#fecdd3;color:#9f1239}
 .grade-v9{background:#ffe4e6;color:#881337}
-.grade-v10{background:#1e1b4b;color:#c7d2fe}
+.grade-v10{background:#e0e7ff;color:#3730a3}
 .grade-k{background:#ccfbf1;color:#0f766e}
 .grade-s{background:#dbeafe;color:#1e40af}
 .grade-s11{background:#bbf7d0;color:#14532d}
 .grade-s12{background:#fef08a;color:#713f12}
 .grade-s13{background:#fed7aa;color:#9a3412}
 .grade-s14{background:#fca5a5;color:#7f1d1d}
-.grade-s15{background:#1e1b4b;color:#c7d2fe}
-.note-text{font-size:12px;color:#78716c;margin-top:6px}
+.grade-s15{background:#e0e7ff;color:#3730a3}
+.note-text{font-size:12px;color:var(--text3);margin-top:6px}
 
-/* Routes */
+/* ── Routes ── */
 .routes-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.routes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.routes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media(max-width:900px){.routes-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.routes-grid{grid-template-columns:1fr}}
-.route-card{background:#1c1917;border:1px solid #292524;border-radius:12px;padding:14px;transition:all .2s}
-.route-card:hover{border-color:#44403c}
-.route-name{font-weight:600;margin-bottom:6px}
+.route-card{
+  background:var(--surface);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.7);
+  box-shadow:var(--shadow);
+  border-radius:14px;padding:14px;transition:all .2s;
+}
+.route-card:hover{border-color:rgba(249,115,22,.3);box-shadow:var(--shadow-lg)}
+.route-name{font-weight:600;margin-bottom:6px;color:var(--text)}
 .route-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .grade-badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
-.status-flash{background:rgba(20,184,166,.2);color:#14b8a6;padding:3px 8px;border-radius:6px;font-size:11px}
-.status-sent{background:rgba(59,130,246,.2);color:#60a5fa;padding:3px 8px;border-radius:6px;font-size:11px}
-.status-project{background:rgba(249,115,22,.2);color:#f97316;padding:3px 8px;border-radius:6px;font-size:11px}
+.status-flash{background:rgba(13,148,136,.12);color:#0d9488;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.status-sent{background:rgba(59,130,246,.12);color:#2563eb;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.status-project{background:rgba(249,115,22,.12);color:var(--orange);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600}
 .route-actions{display:flex;gap:6px;margin-top:10px}
 
-/* Achievements */
-.achievements-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+/* ── Achievements ── */
+.achievements-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media(max-width:900px){.achievements-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.achievements-grid{grid-template-columns:1fr}}
-.ach-card{background:#1c1917;border:1px solid #292524;border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;transition:all .2s}
-.ach-card.unlocked{border-color:rgba(249,115,22,.5)}
-.ach-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;background:#292524;color:#57534e}
-.ach-card.unlocked .ach-icon{background:linear-gradient(135deg,#f97316,#ec4899);color:#fff}
-.ach-name{font-weight:600;margin-bottom:3px}
-.ach-card:not(.unlocked) .ach-name{color:#78716c}
-.ach-desc{font-size:12px;color:#57534e}
-.ach-date{font-size:11px;color:#f97316;margin-top:3px}
-.ach-status{margin-left:auto;font-size:18px;flex-shrink:0}
+.ach-card{
+  background:var(--surface);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.7);
+  box-shadow:var(--shadow);
+  border-radius:14px;padding:14px;
+  display:flex;align-items:center;gap:12px;transition:all .2s;
+}
+.ach-card.unlocked{border-color:rgba(249,115,22,.3);background:linear-gradient(135deg,rgba(255,255,255,.85),rgba(255,247,237,.7))}
+.ach-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:rgba(0,0,0,.05);color:var(--text3)}
+.ach-card.unlocked .ach-icon{background:linear-gradient(135deg,#ff9048,#f97316);color:#fff;box-shadow:0 3px 10px rgba(249,115,22,.3)}
+.ach-name{font-weight:600;margin-bottom:2px;font-size:13px;color:var(--text)}
+.ach-card:not(.unlocked) .ach-name{color:var(--text3)}
+.ach-desc{font-size:11px;color:var(--text3)}
+.ach-date{font-size:10px;color:var(--orange);margin-top:2px;font-weight:600}
+.ach-status{margin-left:auto;font-size:16px;flex-shrink:0}
 
-/* Gym stats */
-.gym-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+/* ── Gym stats ── */
+.gym-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 @media(max-width:600px){.gym-grid{grid-template-columns:repeat(2,1fr)}}
-.gym-card{background:rgba(12,10,9,.5);border-radius:10px;padding:12px;text-align:center}
-.gym-count{font-size:22px;font-weight:700;color:#f97316}
-.gym-name{font-size:12px;color:#78716c;margin-top:4px}
+.gym-card{
+  background:linear-gradient(135deg,rgba(255,247,237,.8),rgba(255,255,255,.6));
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(249,115,22,.15);
+  border-radius:12px;padding:12px;text-align:center;
+  box-shadow:var(--shadow);
+}
+.gym-count{font-size:22px;font-weight:700;color:var(--orange)}
+.gym-name{font-size:11px;color:var(--text3);margin-top:4px;font-weight:500}
 
-/* Modal - Mobile bottom sheet style */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;flex-direction:column;justify-content:flex-end;z-index:100;backdrop-filter:blur(4px)}
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(60,30,10,.25);display:none;flex-direction:column;justify-content:flex-end;z-index:100;backdrop-filter:blur(8px)}
 .modal-overlay.open{display:flex}
-.modal-box{background:#1c1917;border:1px solid #44403c;border-radius:20px 20px 0 0;padding:20px 16px;width:100%;max-width:100%;margin:0;max-height:85vh;overflow-y:auto;animation:slideUp .3s ease}
+.modal-box{
+  background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(32px) saturate(200%);
+  -webkit-backdrop-filter:blur(32px) saturate(200%);
+  border:1px solid rgba(255,255,255,0.9);
+  border-radius:24px 24px 0 0;
+  padding:20px 16px;width:100%;max-width:100%;margin:0;
+  max-height:88vh;overflow-y:auto;
+  animation:slideUp .3s ease;
+  box-shadow:0 -8px 40px rgba(249,115,22,.12),0 -2px 8px rgba(0,0,0,.06);
+}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-handle{width:40px;height:4px;background:#44403c;border-radius:2px;margin:0 auto 16px}
+.modal-handle{width:36px;height:4px;background:rgba(0,0,0,.1);border-radius:2px;margin:0 auto 16px}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.modal-title{font-size:17px;font-weight:700}
-.close-btn{background:#292524;border:none;color:#a8a29e;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify:center}
-.close-btn:active{background:#44403c}
+.modal-title{font-size:17px;font-weight:700;color:var(--text)}
+.close-btn{background:rgba(0,0,0,.06);border:none;color:var(--text2);width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.close-btn:active{background:rgba(249,115,22,.12);color:var(--orange)}
 
-/* Form - Mobile optimized */
+/* ── Form ── */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .form-group{margin-bottom:12px}
-.form-label{font-size:12px;color:#a8a29e;margin-bottom:6px;display:block}
-.form-input{width:100%;background:#0c0a09;border:1px solid #292524;border-radius:10px;padding:12px 14px;font-size:15px;color:#fff;transition:border-color .2s;height:48px}
-.form-input:focus{border-color:#f97316}
-.form-section{background:rgba(12,10,9,.5);border:1px solid #292524;border-radius:12px;padding:14px;margin-bottom:12px}
-.section-title{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block;font-weight:600}
+.form-input{
+  width:100%;
+  background:rgba(248,244,240,.7);
+  border:1.5px solid rgba(0,0,0,.09);
+  border-radius:10px;padding:11px 14px;
+  font-size:15px;color:var(--text);
+  transition:border-color .2s,box-shadow .2s;height:46px;
+}
+.form-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.form-section{
+  background:linear-gradient(135deg,rgba(255,247,237,.5),rgba(255,255,255,.4));
+  border:1px solid rgba(249,115,22,.14);
+  border-radius:14px;padding:14px;margin-bottom:12px;
+}
+.section-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text)}
 .section-badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
 .grade-inputs{display:grid;gap:6px;margin-top:8px}
 .grade-inputs.cols5{grid-template-columns:repeat(5,1fr)}
@@ -184,70 +331,74 @@ canvas{max-width:100%}
 .grade-inputs.cols6{grid-template-columns:repeat(6,1fr)}
 @media(max-width:600px){.grade-inputs.cols4{grid-template-columns:repeat(4,1fr)}.grade-inputs.cols5{grid-template-columns:repeat(5,1fr)}}
 .grade-input-item{text-align:center}
-.grade-input-label{display:block;font-size:11px;font-weight:700;margin-bottom:4px;padding:2px 6px;border-radius:4px;text-align:center}
-/* 抱石 V级色阶：从绿→蓝→黄→橙→红→紫→深紫 */
+.grade-input-label{display:block;font-size:11px;font-weight:700;margin-bottom:4px;padding:2px 4px;border-radius:4px;text-align:center}
 .grade-input-label.v0{background:#dcfce7;color:#166534}
-.grade-input-label.v1{background:#dbeafe;color:#1e40af}
-.grade-input-label.v2{background:#fef3c7;color:#92400e}
-.grade-input-label.v3{background:#fed7aa;color:#9a3412}
-.grade-input-label.v4{background:#fecaca;color:#991b1b}
-.grade-input-label.v5{background:#e9d5ff;color:#6b21a8}
+.grade-input-label.v1{background:#ffedd5;color:#c2410c}
+.grade-input-label.v2{background:#fed7aa;color:#ea580c}
+.grade-input-label.v3{background:#fdba74;color:#f97316}
+.grade-input-label.v4{background:#fb923c;color:#dc2626}
+.grade-input-label.v5{background:#f87171;color:#b91c1c}
 .grade-input-label.v6{background:#f5d0fe;color:#86198f}
 .grade-input-label.v7{background:#ffddd5;color:#7c2d12}
 .grade-input-label.v8{background:#fecdd3;color:#9f1239}
 .grade-input-label.v9{background:#ffe4e6;color:#881337}
-.grade-input-label.v10{background:#1e1b4b;color:#c7d2fe}
-/* K板 */
+.grade-input-label.v10{background:#e0e7ff;color:#3730a3}
 .grade-input-label.kboard{background:#ccfbf1;color:#0f766e}
-/* 高墙 YDS色阶 */
-.grade-input-label.sport{background:#dbeafe;color:#1e40af}  /* 5.5-5.9 入门 */
-.grade-input-label.s11{background:#bbf7d0;color:#14532d}    /* 5.11 中级 */
-.grade-input-label.s12{background:#fef08a;color:#713f12}    /* 5.12 高级 */
-.grade-input-label.s13{background:#fed7aa;color:#9a3412}    /* 5.13 精英 */
-.grade-input-label.s14{background:#fca5a5;color:#7f1d1d}    /* 5.14 顶级 */
-.grade-input-label.s15{background:#1e1b4b;color:#c7d2fe}    /* 5.15 世界级 */
-.grade-number-input{width:100%;background:#0c0a09;border:1px solid #292524;border-radius:8px;padding:10px 4px;text-align:center;font-size:15px;font-weight:600;color:#fff;height:44px}
-.grade-number-input:focus{border-color:#f97316}
+.grade-input-label.sport{background:#dbeafe;color:#1e40af}
+.grade-input-label.s11{background:#bbf7d0;color:#14532d}
+.grade-input-label.s12{background:#fef08a;color:#713f12}
+.grade-input-label.s13{background:#fed7aa;color:#9a3412}
+.grade-input-label.s14{background:#fca5a5;color:#7f1d1d}
+.grade-input-label.s15{background:#e0e7ff;color:#3730a3}
+.grade-number-input{
+  width:100%;
+  background:rgba(248,244,240,.7);
+  border:1.5px solid rgba(0,0,0,.09);
+  border-radius:8px;padding:8px 2px;
+  text-align:center;font-size:15px;font-weight:700;
+  color:var(--text);height:42px;
+}
+.grade-number-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
 .modal-footer{display:flex;gap:12px;margin-top:20px;padding-bottom:env(safe-area-inset-bottom)}
-.btn-block{flex:1;padding:14px;border-radius:12px;font-size:15px;font-weight:600}
+.btn-block{flex:1;padding:14px;border-radius:14px;font-size:15px;font-weight:700}
 
-/* Notification - Mobile style */
-.notif{position:fixed;top:76px;left:16px;right:16px;padding:14px 20px;border-radius:12px;color:#fff;font-weight:500;font-size:14px;z-index:200;animation:slideDown .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.4);text-align:center}
+/* ── Notification ── */
+.notif{position:fixed;top:72px;left:16px;right:16px;padding:14px 20px;border-radius:14px;color:#fff;font-weight:600;font-size:14px;z-index:200;animation:slideDown .3s ease;box-shadow:0 6px 24px rgba(0,0,0,.15);text-align:center}
 @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-.notif-success{background:linear-gradient(135deg,#10b981,#059669)}
-.notif-error{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.notif-info{background:linear-gradient(135deg,#3b82f6,#2563eb)}
-.notif-ach{background:linear-gradient(135deg,#f97316,#ec4899)}
+.notif-success{background:linear-gradient(135deg,#34d399,#10b981)}
+.notif-error{background:linear-gradient(135deg,#f87171,#ef4444)}
+.notif-info{background:linear-gradient(135deg,#60a5fa,#3b82f6)}
+.notif-ach{background:linear-gradient(135deg,#ffa94d,#f97316)}
 
-/* Empty */
-.empty{text-align:center;padding:48px 20px;color:#57534e;font-size:14px}
-.empty-icon{font-size:36px;margin-bottom:8px}
+/* ── Empty ── */
+.empty{text-align:center;padding:48px 20px;color:var(--text3);font-size:14px}
+.empty-icon{font-size:32px;margin-bottom:8px;opacity:.5}
 
-/* Section heading */
-.section-heading{font-size:15px;font-weight:600;margin-bottom:14px}
+/* ── Section heading ── */
+.section-heading{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--text)}
 
-/* Scrollbar */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:#0c0a09}
-::-webkit-scrollbar-thumb{background:#44403c;border-radius:3px}
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(249,115,22,.25);border-radius:2px}
 
-/* Bar chart manual */
-.bar-chart-wrap{padding:10px 0}
+/* ── Bar chart ── */
+.bar-chart-wrap{padding:8px 0}
 .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.bar-label{font-size:12px;color:#a8a29e;width:40px;text-align:right;flex-shrink:0}
-.bar-outer{flex:1;background:#292524;border-radius:4px;height:18px;overflow:hidden}
-.bar-inner{height:100%;border-radius:4px;transition:width .5s ease;min-width:2px}
-.bar-count{font-size:12px;color:#a8a29e;width:28px;flex-shrink:0}
+.bar-label{font-size:12px;color:var(--text3);width:40px;text-align:right;flex-shrink:0;font-weight:600}
+.bar-outer{flex:1;background:rgba(249,115,22,.1);border-radius:6px;height:16px;overflow:hidden}
+.bar-inner{height:100%;border-radius:6px;transition:width .6s ease;min-width:3px}
+.bar-count{font-size:12px;color:var(--text3);width:28px;flex-shrink:0;font-weight:600}
 
-/* Donut chart manual */
-.donut-wrap{display:flex;align-items:center;gap:20px;padding:10px 0}
+/* ── Donut chart ── */
+.donut-wrap{display:flex;align-items:center;gap:20px;padding:8px 0}
 .donut-svg{flex-shrink:0}
 .donut-legend{flex:1}
-.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}
-.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:var(--text2)}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 
-/* Progress chart manual */
-.line-chart-wrap{overflow-x:auto;padding:10px 0}
+/* ── Line chart ── */
+.line-chart-wrap{overflow-x:auto;padding:8px 0}
 .line-chart-svg{min-width:100%}
 </style>
 </head>
@@ -257,22 +408,49 @@ canvas{max-width:100%}
 <header class="header">
   <div class="header-inner">
     <div class="logo">
-      <div class="logo-icon">🧗</div>
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <!-- 头部 -->
+          <ellipse cx="12" cy="8" rx="4.5" ry="4"/>
+          <!-- 左耳 -->
+          <path d="M7.5 5 L6 2 L9 4.5"/>
+          <!-- 右耳 -->
+          <path d="M16.5 5 L18 2 L15 4.5"/>
+          <!-- 眼睛 -->
+          <circle cx="10.5" cy="7.5" r="0.6" fill="#fff" stroke="none"/>
+          <circle cx="13.5" cy="7.5" r="0.6" fill="#fff" stroke="none"/>
+          <!-- 胡须 -->
+          <path d="M7 9 L10 9.5"/>
+          <path d="M17 9 L14 9.5"/>
+          <path d="M7 10.2 L10 10"/>
+          <path d="M17 10.2 L14 10"/>
+          <!-- 身体 -->
+          <path d="M8.5 12 C7 13 6.5 15 7 17 L9 20"/>
+          <path d="M15.5 12 C17 13 17.5 15 17 17 L15 20"/>
+          <!-- 尾巴 -->
+          <path d="M15 20 Q19 20 20 17 Q21 14 18 13"/>
+          <!-- 爪子 -->
+          <path d="M9 20 L8 22 M9 20 L10 22"/>
+          <path d="M15 20 L14 22 M15 20 L16 22"/>
+        </svg>
+      </div>
       <div class="logo-text">
-        <h1>ClimbLog</h1>
+        <h1>猫爬架</h1>
         <p>攀岩记录</p>
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn btn-gray btn-icon" onclick="exportData()" title="导出JSON">⬇</button>
-      <label class="btn btn-gray btn-icon" style="cursor:pointer" title="导入JSON">
-        ⬆
-        <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(this)">
+      <button class="btn btn-gray btn-icon" onclick="exportData()" title="导出JSON">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+      <label class="btn btn-gray btn-icon" for="importFile" title="导入JSON">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </label>
-      <label class="btn btn-gray btn-icon" style="cursor:pointer" title="导入Excel">
-        📊
-        <input type="file" id="importExcelFile" style="display:none" accept=".xlsx,.xls" onchange="importExcel(this)">
+      <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(this)">
+      <label class="btn btn-gray btn-icon" for="importExcelFile" title="导入Excel">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/><path d="m13 15 2 2 4-4"/></svg>
       </label>
+      <input type="file" id="importExcelFile" style="display:none" accept=".xlsx,.xls" onchange="importExcel(this)">
     </div>
   </div>
 </header>
@@ -283,23 +461,23 @@ canvas{max-width:100%}
 <!-- Bottom Navigation -->
 <nav class="bottom-nav">
   <button class="bottom-nav-item active" onclick="switchTab('dashboard',this)" data-tab="dashboard">
-    <span class="nav-icon">📊</span>
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a89080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
     <span>统计</span>
   </button>
   <button class="bottom-nav-item" onclick="switchTab('calendar',this)" data-tab="calendar">
-    <span class="nav-icon">📆</span>
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a89080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
     <span>日历</span>
   </button>
   <button class="bottom-nav-item" onclick="switchTab('history',this)" data-tab="history">
-    <span class="nav-icon">📋</span>
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a89080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></span>
     <span>记录</span>
   </button>
   <button class="bottom-nav-item" onclick="switchTab('routes',this)" data-tab="routes">
-    <span class="nav-icon">🗺</span>
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a89080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>
     <span>线路</span>
   </button>
   <button class="bottom-nav-item" onclick="switchTab('achievements',this)" data-tab="achievements">
-    <span class="nav-icon">🏅</span>
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a89080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></span>
     <span>成就</span>
   </button>
 </nav>
@@ -310,29 +488,29 @@ canvas{max-width:100%}
   <div class="stats-grid">
     <div class="stat-card card-hover">
       <div><div class="stat-label">总攀爬次数</div><div class="stat-value" id="st-total">0</div></div>
-      <div class="stat-icon icon-orange">🏔</div>
+      <div class="stat-icon icon-orange"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 18 9 6 15 13 19 8 21 18"/></svg></div>
     </div>
     <div class="stat-card card-hover">
       <div><div class="stat-label">本月打卡</div><div class="stat-value" id="st-monthly">0</div></div>
-      <div class="stat-icon icon-pink">📅</div>
+      <div class="stat-icon icon-pink"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
     </div>
     <div class="stat-card card-hover">
       <div><div class="stat-label">完成线路</div><div class="stat-value" id="st-routes">0</div></div>
-      <div class="stat-icon icon-teal">✅</div>
+      <div class="stat-icon icon-teal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
     </div>
     <div class="stat-card card-hover">
       <div><div class="stat-label">最高难度</div><div class="stat-value" id="st-max" style="color:#f97316">-</div></div>
-      <div class="stat-icon icon-purple">🏆</div>
+      <div class="stat-icon icon-purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></div>
     </div>
   </div>
 
   <!-- Tabs (Desktop only) -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('dashboard',this)" data-tab="dashboard">📊 统计概览</button>
-    <button class="tab" onclick="switchTab('calendar',this)" data-tab="calendar">📆 日历视图</button>
-    <button class="tab" onclick="switchTab('history',this)" data-tab="history">📋 历史记录</button>
-    <button class="tab" onclick="switchTab('routes',this)" data-tab="routes">🗺 线路收藏</button>
-    <button class="tab" onclick="switchTab('achievements',this)" data-tab="achievements">🏅 成就</button>
+    <button class="tab active" onclick="switchTab('dashboard',this)" data-tab="dashboard">统计概览</button>
+    <button class="tab" onclick="switchTab('calendar',this)" data-tab="calendar">日历视图</button>
+    <button class="tab" onclick="switchTab('history',this)" data-tab="history">历史记录</button>
+    <button class="tab" onclick="switchTab('routes',this)" data-tab="routes">线路收藏</button>
+    <button class="tab" onclick="switchTab('achievements',this)" data-tab="achievements">成就</button>
   </div>
 
   <!-- Dashboard -->
@@ -408,7 +586,7 @@ canvas{max-width:100%}
   <div class="modal-box">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <span class="modal-title">🧗 打卡记录</span>
+      <span class="modal-title">打卡记录</span>
       <button class="close-btn" onclick="closeModal('modal-checkin')">✕</button>
     </div>
     <form id="form-checkin" onsubmit="saveCheckIn(event)">
@@ -516,7 +694,7 @@ canvas{max-width:100%}
   <div class="modal-box">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <span class="modal-title">🗺 添加线路</span>
+      <span class="modal-title">添加线路</span>
       <button class="close-btn" onclick="closeModal('modal-route')">✕</button>
     </div>
     <form id="form-route" onsubmit="saveRoute(event)">
@@ -579,7 +757,18 @@ canvas{max-width:100%}
   </div>
 </div>
 
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" onerror="loadXLSXFallback()"></script>
+<script>
+function loadXLSXFallback(){
+  var s=document.createElement('script');
+  s.src='https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js';
+  s.onerror=function(){
+    window._xlsxLoadFailed=true;
+    console.error('XLSX库加载失败，导入Excel功能不可用');
+  };
+  document.head.appendChild(s);
+}
+</script>
 <script>
 // ============ DATA ============
 const SK = 'climblog_v2';
@@ -686,16 +875,16 @@ function renderTypeChart(){
     <div class="legend-item">
       <div class="legend-dot" style="background:${d.color}"></div>
       <span>${d.label}</span>
-      <span style="margin-left:auto;color:#78716c">${d.val}</span>
+      <span style="margin-left:auto;color:#a89080">${d.val}</span>
     </div>
   `).join('');
   
   document.getElementById('type-chart').innerHTML = `
     <div class="donut-wrap">
       <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#292524" stroke-width="${stroke}"></circle>
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(249,115,22,.1)" stroke-width="${stroke}"></circle>
         ${total>0?segs:''}
-        <text x="${cx}" y="${cy+5}" text-anchor="middle" fill="#d6d3d1" font-size="14" font-weight="700">${total}</text>
+        <text x="${cx}" y="${cy+5}" text-anchor="middle" fill="#1a1209" font-size="14" font-weight="700">${total}</text>
       </svg>
       <div class="donut-legend">${legend}</div>
     </div>
@@ -731,8 +920,8 @@ function renderProgressChart(){
   const gridLines=[0,0.25,0.5,0.75,1].map(p=>{
     const y=H-pad-p*gh;
     const v=Math.round(p*maxV);
-    return `<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#292524" stroke-width="1"/>
-            <text x="${pad-4}" y="${y+4}" text-anchor="end" fill="#57534e" font-size="10">${v}</text>`;
+    return `<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="rgba(249,115,22,.12)" stroke-width="1"/>
+            <text x="${pad-4}" y="${y+4}" text-anchor="end" fill="#a89080" font-size="10">${v}</text>`;
   }).join('');
   
   // Gradient area
@@ -740,10 +929,10 @@ function renderProgressChart(){
   const areaD=pathD+` L${pts[pts.length-1].x},${H-pad} L${pts[0].x},${H-pad} Z`;
   
   // X labels (show every 2nd)
-  const xLabels=pts.map((p,i)=>i%2===0?`<text x="${p.x}" y="${H-4}" text-anchor="middle" fill="#57534e" font-size="9">${p.l.slice(5)}</text>`:'').join('');
+  const xLabels=pts.map((p,i)=>i%2===0?`<text x="${p.x}" y="${H-4}" text-anchor="middle" fill="#a89080" font-size="9">${p.l.slice(5)}</text>`:'').join('');
   
   // Dots
-  const dots=pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#f97316" stroke="#1c1917" stroke-width="2"/>`).join('');
+  const dots=pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#f97316" stroke="rgba(255,255,255,.9)" stroke-width="2"/>`).join('');
   
   document.getElementById('progress-chart').innerHTML=`
     <div class="line-chart-wrap">
@@ -853,16 +1042,16 @@ function showDayDetail(y,m,day){
   if(!ss.length) return;
   document.getElementById('day-modal-title').textContent=`${ds} 的记录`;
   document.getElementById('day-modal-body').innerHTML=ss.map(s=>`
-    <div style="background:#0c0a09;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid #292524">
+    <div style="background:rgba(255,247,237,.6);border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid rgba(249,115,22,.15)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div>
-          <strong>${s.gym}</strong>
-          <span style="color:#a8a29e;font-size:13px;margin-left:8px">${s.activity}</span>
+          <strong style="color:#1a1209">${s.gym}</strong>
+          <span style="color:#a89080;font-size:13px;margin-left:8px">${s.activity}</span>
         </div>
-        <button onclick="deleteSession('${s.id}');closeModal('modal-day')" style="background:rgba(127,29,29,.3);color:#f87171;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:12px">删除</button>
+        <button onclick="deleteSession('${s.id}');closeModal('modal-day')" style="background:rgba(254,226,226,.8);color:#c0392b;border:1px solid rgba(192,57,43,.15);padding:4px 10px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">删除</button>
       </div>
       ${renderGradeChips(s)}
-      ${s.note?`<div style="color:#78716c;font-size:12px;margin-top:6px">📝 ${s.note}</div>`:''}
+      ${s.note?`<div style="color:#a89080;font-size:12px;margin-top:6px">📝 ${s.note}</div>`:''}
     </div>
   `).join('');
   openModal('modal-day');
@@ -895,13 +1084,17 @@ function renderHistory(){
           <span class="history-gym">${s.gym}</span>
         </div>
         <div class="history-actions" onclick="event.stopPropagation()">
-          <button class="btn btn-gray btn-icon btn-sm" onclick="editSession('${s.id}')" title="编辑">✏️</button>
-          <button class="btn btn-danger btn-icon btn-sm" onclick="deleteSession('${s.id}')" title="删除">🗑</button>
+          <button class="btn btn-gray btn-icon btn-sm" onclick="editSession('${s.id}')" title="编辑">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn btn-danger btn-icon btn-sm" onclick="deleteSession('${s.id}')" title="删除">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
         </div>
       </div>
-      <div class="history-activity">📌 ${s.activity}</div>
+      <div class="history-activity">${s.activity}</div>
       ${renderGradeChips(s)}
-      ${s.note?`<div class="note-text">📝 ${s.note}</div>`:''}
+      ${s.note?`<div class="note-text">${s.note}</div>`:''}
     </div>
   `).join('');
 }
@@ -994,18 +1187,18 @@ function showSessionDetail(id){
   if(!s) return;
   document.getElementById('day-modal-title').textContent=`${s.date} 打卡详情`;
   document.getElementById('day-modal-body').innerHTML=`
-    <div style="background:#0c0a09;border-radius:12px;padding:16px;border:1px solid #292524">
+    <div style="background:rgba(255,247,237,.6);border-radius:14px;padding:16px;border:1px solid rgba(249,115,22,.15)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div>
-          <strong style="font-size:16px">${s.gym}</strong>
-          <span style="color:#a8a29e;font-size:13px;margin-left:8px">${s.activity}</span>
+          <strong style="font-size:16px;color:#1a1209">${s.gym}</strong>
+          <span style="color:#a89080;font-size:13px;margin-left:8px">${s.activity}</span>
         </div>
       </div>
       ${renderGradeChips(s)}
-      ${s.note?`<div style="color:#78716c;font-size:13px;margin-top:10px;padding-top:10px;border-top:1px solid #292524">📝 ${s.note}</div>`:''}
+      ${s.note?`<div style="color:#a89080;font-size:13px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(249,115,22,.1)">📝 ${s.note}</div>`:''}
       <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-gray btn-block" onclick="closeModal('modal-day');editSession('${s.id}')" style="flex:1">✏️ 编辑</button>
-        <button class="btn btn-danger btn-block" onclick="closeModal('modal-day');deleteSession('${s.id}')" style="flex:1">🗑 删除</button>
+        <button class="btn btn-gray btn-block" onclick="closeModal('modal-day');editSession('${s.id}')" style="flex:1">编辑</button>
+        <button class="btn btn-danger btn-block" onclick="closeModal('modal-day');deleteSession('${s.id}')" style="flex:1">删除</button>
       </div>
     </div>
   `;
@@ -1084,14 +1277,14 @@ function renderRoutes(){
       <div class="route-name">${r.name}</div>
       <div class="route-meta">
         <span class="grade-badge ${typeColors[r.type]||'grade-v1'}">${r.grade}</span>
-        <span class="${statusMap[r.status].split(' ')[0]}">${statusMap[r.status]}</span>
+        <span class="${statusMap[r.status].split(' ')[0]}">${statusMap[r.status].split(' ').slice(1).join(' ')}</span>
       </div>
-      ${r.gym?`<div style="font-size:12px;color:#78716c">🏢 ${r.gym}</div>`:''}
-      ${r.color?`<div style="font-size:12px;color:#a8a29e">🎨 ${r.color}</div>`:''}
-      ${r.note?`<div style="font-size:12px;color:#78716c;margin-top:6px">📝 ${r.note}</div>`:''}
+      ${r.gym?`<div style="font-size:12px;color:#a89080;margin-bottom:2px">${r.gym}</div>`:''}
+      ${r.color?`<div style="font-size:12px;color:#b09080;margin-bottom:2px">${r.color}</div>`:''}
+      ${r.note?`<div style="font-size:12px;color:#a89080;margin-top:4px">${r.note}</div>`:''}
       <div class="route-actions">
-        <button class="btn btn-gray btn-sm" style="flex:1" onclick="editRoute('${r.id}')">✏️ 编辑</button>
-        <button class="btn btn-danger btn-sm" style="flex:1" onclick="deleteRoute('${r.id}')">🗑 删除</button>
+        <button class="btn btn-gray btn-sm" style="flex:1" onclick="editRoute('${r.id}')">编辑</button>
+        <button class="btn btn-danger btn-sm" style="flex:1" onclick="deleteRoute('${r.id}')">删除</button>
       </div>
     </div>
   `).join('');
@@ -1168,8 +1361,28 @@ function importData(input){
 
 // ============ EXCEL IMPORT ============
 function importExcel(input){
+  console.log('importExcel called, XLSX:', typeof XLSX, 'input:', input);
+  if(!input || !input.files){
+    notify('❌ 文件选择出错，请重试','error');
+    return;
+  }
+  if(typeof XLSX==='undefined'){
+    notify('❌ Excel解析库尚未加载，请检查网络后刷新页面重试','error');
+    input.value='';
+    return;
+  }
   const file=input.files[0];
-  if(!file) return;
+  if(!file){
+    notify('❌ 未选择文件','error');
+    return;
+  }
+  
+  // 检查 FileReader 是否可用（某些 iframe 环境可能受限）
+  if(typeof FileReader==='undefined'){
+    notify('❌ 当前环境不支持文件读取，请使用外部浏览器打开','error');
+    input.value='';
+    return;
+  }
   
   const reader=new FileReader();
   reader.onload=function(e){
@@ -1305,11 +1518,16 @@ function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function switchTab(name, btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.bottom-nav-item').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(t=>{
+    t.classList.remove('active');
+    t.querySelectorAll('svg').forEach(s=>s.setAttribute('stroke','#a89080'));
+  });
   document.getElementById('tab-'+name).classList.add('active');
   if(btn) btn.classList.add('active');
-  // Sync active state between desktop tabs and mobile nav
-  document.querySelectorAll('.tab[data-tab="'+name+'"], .bottom-nav-item[data-tab="'+name+'"]').forEach(el=>el.classList.add('active'));
+  document.querySelectorAll('.tab[data-tab="'+name+'"], .bottom-nav-item[data-tab="'+name+'"]').forEach(el=>{
+    el.classList.add('active');
+    el.querySelectorAll('svg').forEach(s=>s.setAttribute('stroke','#f97316'));
+  });
   if(name==='dashboard') renderDashboard();
   if(name==='calendar') renderCalendar();
   if(name==='history') renderHistory();
