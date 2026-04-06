@@ -210,11 +210,11 @@ canvas{max-width:100%}
 .grades-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .grade-chip{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
 .grade-v0{background:#dcfce7;color:#166534}
-.grade-v1{background:#ffedd5;color:#c2410c}
-.grade-v2{background:#fed7aa;color:#ea580c}
-.grade-v3{background:#fdba74;color:#f97316}
-.grade-v4{background:#fb923c;color:#dc2626}
-.grade-v5{background:#f87171;color:#b91c1c}
+.grade-v1{background:#fed7aa;color:#c2410c}
+.grade-v2{background:#fdba74;color:#ea580c}
+.grade-v3{background:#fb923c;color:#ea580c}
+.grade-v4{background:#f97316;color:#dc2626}
+.grade-v5{background:#ea580c;color:#b91c1c}
 .grade-v6{background:#f5d0fe;color:#86198f}
 .grade-v7{background:#ffddd5;color:#7c2d12}
 .grade-v8{background:#fecdd3;color:#9f1239}
@@ -228,6 +228,33 @@ canvas{max-width:100%}
 .grade-s14{background:#fca5a5;color:#7f1d1d}
 .grade-s15{background:#e0e7ff;color:#3730a3}
 .note-text{font-size:12px;color:var(--text3);margin-top:6px}
+
+/* ── Toggle ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:14px;color:var(--text);cursor:pointer}
+.toggle-row:last-child{border-bottom:none}
+.toggle-row input{display:none}
+.toggle-switch{width:44px;height:24px;background:#e5e7eb;border-radius:12px;position:relative;transition:background .2s;flex-shrink:0}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.toggle-row input:checked + .toggle-switch{background:#f97316}
+.toggle-row input:checked + .toggle-switch::after{transform:translateX(20px)}
+
+/* ── Settings Modal (centered, compact) ── */
+.modal-center{justify-content:center!important;align-items:center}
+.modal-center .modal-box{border-radius:24px;max-height:85vh;overflow-y:auto;animation:none;width:360px}
+.settings-box .modal-header{padding-bottom:10px;margin-bottom:12px}
+.settings-box .modal-title{font-size:16px}
+.settings-box .close-btn{width:28px;height:28px;font-size:14px;border-radius:8px}
+.settings-body{padding:4px 0!important}
+.settings-section{margin-bottom:12px}
+.settings-label{font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;padding-left:2px;text-transform:uppercase;letter-spacing:.5px}
+.stoggle-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.04);font-size:13px;color:var(--text);cursor:pointer}
+.stoggle-row:last-child{border-bottom:none}
+.stoggle-row input{display:none}
+.grade-range-row{display:flex;gap:8px}
+.grade-range-item{flex:1}
+.grade-range-hint{font-size:11px;color:var(--text3);margin-bottom:3px;display:block}
+.grade-range-item select{width:100%;padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,.1);background:var(--surface);font-size:13px;color:var(--text)}
+.btn-sm-danger{margin-top:4px;color:#ef4444;border-color:rgba(239,68,68,.25);font-size:13px}
 
 /* ── Routes ── */
 .routes-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -390,11 +417,11 @@ canvas{max-width:100%}
 .bar-inner{height:100%;border-radius:6px;transition:width .6s ease;min-width:3px}
 .bar-count{font-size:12px;color:var(--text3);width:28px;flex-shrink:0;font-weight:600}
 
-/* ── Donut chart ── */
-.donut-wrap{display:flex;align-items:center;gap:20px;padding:8px 0}
+/* ── Donut chart (compact) ── */
+.donut-wrap{display:flex;align-items:center;gap:14px;padding:4px 0}
 .donut-svg{flex-shrink:0}
 .donut-legend{flex:1}
-.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:var(--text2)}
+.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;color:var(--text2)}
 .legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 
 /* ── Line chart ── */
@@ -451,9 +478,55 @@ canvas{max-width:100%}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/><path d="m13 15 2 2 4-4"/></svg>
       </label>
       <input type="file" id="importExcelFile" style="display:none" accept=".xlsx,.xls" onchange="importExcel(this)">
+      <button class="btn btn-gray btn-icon" onclick="openModal('modal-settings')" title="设置">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
   </div>
 </header>
+
+<!-- Settings Modal (centered) -->
+<div class="modal-overlay modal-center" id="modal-settings" onclick="if(event.target===this)closeModal('modal-settings')">
+  <div class="modal-box settings-box">
+    <div class="modal-header">
+      <span class="modal-title">设置</span>
+      <button class="close-btn" onclick="closeModal('modal-settings')">✕</button>
+    </div>
+    <div class="modal-body settings-body">
+      <div class="settings-section">
+        <div class="settings-label">页面显示内容</div>
+        <label class="stoggle-row"><span>难度分布图表</span><input type="checkbox" id="set-show-difficulty" checked><span class="toggle-switch"></span></label>
+        <label class="stoggle-row"><span>攀岩类型占比</span><input type="checkbox" id="set-show-type" checked><span class="toggle-switch"></span></label>
+        <label class="stoggle-row"><span>常去岩馆</span><input type="checkbox" id="set-show-gym" checked><span class="toggle-switch"></span></label>
+        <label class="stoggle-row"><span>每周爬线数量</span><input type="checkbox" id="set-show-progress" checked><span class="toggle-switch"></span></label>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">难度分布范围</div>
+        <div class="grade-range-row">
+          <div class="grade-range-item">
+            <span class="grade-range-hint">最低</span>
+            <select id="set-grade-min">
+              <option value="">全部</option><option value="V0">V0</option><option value="V1">V1</option><option value="V2">V2</option><option value="V3">V3</option><option value="V4">V4</option><option value="V5">V5</option><option value="V6">V6</option><option value="V7">V7</option>
+            </select>
+          </div>
+          <div class="grade-range-item">
+            <span class="grade-range-hint">最高</span>
+            <select id="set-grade-max">
+              <option value="">全部</option><option value="V0">V0</option><option value="V1">V1</option><option value="V2">V2</option><option value="V3">V3</option><option value="V4">V4</option><option value="V5">V5</option><option value="V6">V6</option><option value="V7">V7</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">数据管理</div>
+        <button class="btn btn-gray btn-block btn-sm-danger" onclick="clearAllData()">🗑 清空所有数据</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary btn-block" onclick="saveAndApplySettings()">💾 保存设置</button>
+    </div>
+  </div>
+</div>
 
 <!-- Floating Action Button -->
 <button class="fab" onclick="openCheckIn()">＋</button>
@@ -526,12 +599,12 @@ canvas{max-width:100%}
       </div>
     </div>
     <div class="card" style="margin-bottom:16px">
-      <div class="section-heading">每周进步曲线（线路数）</div>
-      <div id="progress-chart"></div>
-    </div>
-    <div class="card">
       <div class="section-heading">常去岩馆</div>
       <div class="gym-grid" id="gym-stats"><div class="empty"><div class="empty-icon">🏢</div>暂无数据</div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-heading">每周爬线数量</div>
+      <div id="progress-chart"></div>
     </div>
   </div>
 
@@ -833,15 +906,23 @@ function updateStats(){
 
 // ============ CHARTS ============
 function renderDifficultyChart(){
-  const grades=['V1','V2','V3','V4','V5'];
-  const counts={V1:0,V2:0,V3:0,V4:0,V5:0};
+  // 读取设置中的等级范围
+  const st=JSON.parse(localStorage.getItem('climber_settings')||'{}');
+  const allGrades=['V0','V1','V2','V3','V4','V5','V6','V7'];
+  let minIdx=st.gradeMin?allGrades.indexOf(st.gradeMin):0;
+  let maxIdx=st.gradeMax?allGrades.indexOf(st.gradeMax):allGrades.length-1;
+  if(minIdx<0)minIdx=0;
+  if(maxIdx<0)maxIdx=allGrades.length-1;
+  const grades=allGrades.slice(Math.max(minIdx,1),maxIdx+1);
+  const counts={};
+  grades.forEach(g=>counts[g]=0);
   db.sessions.forEach(s=>grades.forEach(g=>{ if(s.boulder&&s.boulder[g]) counts[g]+=s.boulder[g]; }));
   const max=Math.max(...Object.values(counts),1);
-  const colors={V1:'#3b82f6',V2:'#f59e0b',V3:'#f97316',V4:'#ef4444',V5:'#8b5cf6'};
+  const colors={V0:'#dcfce7',V1:'#fed7aa',V2:'#fdba74',V3:'#fb923c',V4:'#f97316',V5:'#ea580c',V6:'#f97316',V7:'#ea580c'};
   const html=grades.map(g=>`
     <div class="bar-row">
       <span class="bar-label">${g}</span>
-      <div class="bar-outer"><div class="bar-inner" style="width:${(counts[g]/max*100).toFixed(1)}%;background:${colors[g]}"></div></div>
+      <div class="bar-outer"><div class="bar-inner" style="width:${(counts[g]/max*100).toFixed(1)}%;background:${colors[g]||'#fed7aa'}"></div></div>
       <span class="bar-count">${counts[g]}</span>
     </div>
   `).join('');
@@ -856,10 +937,10 @@ function renderTypeChart(){
     s+=Object.values(ss.sport||{}).reduce((a,c)=>a+c,0);
   });
   const total=b+k+s||1;
-  const data=[{label:'室内抱石',val:b,color:'#f97316'},{label:'K板',val:k,color:'#14b8a6'},{label:'高墙难度',val:s,color:'#8b5cf6'}];
+  const data=[{label:'室内抱石',val:b,color:'#f97316'},{label:'K板',val:k,color:'#fb923c'},{label:'高墙难度',val:s,color:'#ea580c'}];
   
-  // Simple SVG donut
-  const r=60, cx=70, cy=70, stroke=22;
+  // Simple SVG donut (compact)
+  const r=40, cx=50, cy=50, stroke=14;
   const circ=2*Math.PI*r;
   let offset=0;
   const segs=data.map(d=>{
@@ -881,10 +962,10 @@ function renderTypeChart(){
   
   document.getElementById('type-chart').innerHTML = `
     <div class="donut-wrap">
-      <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
+      <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100">
         <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(249,115,22,.1)" stroke-width="${stroke}"></circle>
         ${total>0?segs:''}
-        <text x="${cx}" y="${cy+5}" text-anchor="middle" fill="#1a1209" font-size="14" font-weight="700">${total}</text>
+        <text x="${cx}" y="${cy+4}" text-anchor="middle" fill="#1a1209" font-size="12" font-weight="700">${total}</text>
       </svg>
       <div class="donut-legend">${legend}</div>
     </div>
@@ -1511,6 +1592,62 @@ function parseActivity(note){
   return '爬';
 }
 
+// ============ SETTINGS ============
+function loadSettings(){
+  const s=JSON.parse(localStorage.getItem('climber_settings')||'{}');
+  document.getElementById('set-show-difficulty').checked=s.showDifficulty!==false;
+  document.getElementById('set-show-type').checked=s.showType!==false;
+  document.getElementById('set-show-gym').checked=s.showGym!==false;
+  document.getElementById('set-show-progress').checked=s.showProgress!==false;
+  document.getElementById('set-grade-min').value=s.gradeMin||'';
+  document.getElementById('set-grade-max').value=s.gradeMax||'';
+  applySettings();
+}
+
+function saveSettings(){
+  const s={
+    showDifficulty:document.getElementById('set-show-difficulty').checked,
+    showType:document.getElementById('set-show-type').checked,
+    showGym:document.getElementById('set-show-gym').checked,
+    showProgress:document.getElementById('set-show-progress').checked,
+    gradeMin:document.getElementById('set-grade-min').value,
+    gradeMax:document.getElementById('set-grade-max').value
+  };
+  localStorage.setItem('climber_settings',JSON.stringify(s));
+  applySettings();
+}
+
+function applySettings(){
+  const s=JSON.parse(localStorage.getItem('climber_settings')||'{}');
+  // 找到难度分布卡片
+  const diffCard=document.querySelector('#difficulty-chart')?.closest('.card');
+  if(diffCard) diffCard.style.display=(s.showDifficulty!==false)?'':'none';
+  // 攀岩类型占比
+  const typeCard=document.querySelector('#type-chart')?.closest('.card');
+  if(typeCard) typeCard.style.display=(s.showType!==false)?'':'none';
+  // 常去岩馆
+  const gymCard=document.querySelector('#gym-stats')?.closest('.card');
+  if(gymCard) gymCard.style.display=(s.showGym!==false)?'':'none';
+  // 每周爬线数量
+  const progCard=document.querySelector('#progress-chart')?.closest('.card');
+  if(progCard) progCard.style.display=(s.showProgress!==false)?'':'none';
+}
+
+function clearAllData(){
+  if(!confirm('确定要清空所有数据吗？此操作不可恢复！')) return;
+  db={sessions:[],routes:[],achievements:[]};
+  saveDB();
+  refreshAll();
+  notify('🗑 数据已清空','success');
+  closeModal('modal-settings');
+}
+
+function saveAndApplySettings(){
+  saveSettings();
+  notify('✅ 设置已保存','success');
+  closeModal('modal-settings');
+}
+
 // ============ UI UTILS ============
 function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
@@ -1563,6 +1700,7 @@ renderCalendar();
 renderHistory();
 renderRoutes();
 renderAchievements();
+loadSettings();
 </script>
 </body>
 </html>
