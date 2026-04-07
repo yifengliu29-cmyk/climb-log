@@ -384,6 +384,25 @@ canvas{max-width:100%}
   height:38px;text-align:center;
 }
 .grade-row-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+/* 磕了 X 条 输入框组合 */
+.grade-row-input-wrap{
+  flex:1;min-width:0;
+  display:flex;align-items:center;gap:2px;
+  background:rgba(248,244,240,.7);
+  border:1.5px solid rgba(0,0,0,.09);
+  border-radius:10px;height:38px;padding:0 8px 0 10px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.grade-row-input-wrap:focus-within{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.grade-row-prefix,.grade-row-suffix{
+  font-size:13px;font-weight:500;color:var(--text3);white-space:nowrap;flex-shrink:0;
+}
+.grade-row-input-wrap .grade-row-input{
+  border:none;background:transparent;border-radius:0;
+  height:100%;padding:0 2px;font-size:14px;font-weight:700;text-align:center;
+  box-shadow:none;min-width:28px;
+}
+.grade-row-input-wrap .grade-row-input:focus{border:none;box-shadow:none}
 .grade-row-del{
   width:30px;height:30px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
@@ -578,7 +597,10 @@ canvas{max-width:100%}
       </div>
       <div class="settings-section">
         <div class="settings-label">数据管理</div>
-        <button class="btn btn-gray btn-block btn-sm-danger" onclick="clearAllData()">🗑 清空所有数据</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-gray btn-block btn-sm-danger" onclick="clearAllData()">🗑 清空所有数据</button>
+          <button class="btn btn-gray btn-block" style="font-size:13px" onclick="openModal('modal-data-info')">📋 数据保存说明</button>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -713,6 +735,24 @@ canvas{max-width:100%}
   </div>
 </main>
 
+<!-- Data Info Modal -->
+<div class="modal-overlay modal-center" id="modal-data-info" onclick="if(event.target===this)closeModal('modal-data-info')">
+  <div class="modal-box settings-box" style="width:380px">
+    <div class="modal-header">
+      <span class="modal-title">📋 数据保存说明</span>
+      <button class="close-btn" onclick="closeModal('modal-data-info')">✕</button>
+    </div>
+    <div class="settings-body" style="padding:16px 0;font-size:13px;line-height:1.8;color:var(--text2)">
+      <p style="color:var(--text);font-weight:600;margin-bottom:8px">啊啊啊啊啊版本还非常早期，没有搭建数据库！</p>
+      <p>点击主页顶部的<strong style="color:var(--orange)">导出</strong>按钮可以导出 JSON 文件，随时可以导入该 JSON 文件来恢复数据。</p>
+      <p>这样能尽量保全测试期间录入的数据。很不方便，滑跪！——冰 🙇‍♀️</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary btn-block" onclick="closeModal('modal-data-info')">我知道了</button>
+    </div>
+  </div>
+</div>
+
 <!-- Check-in Modal -->
 <div class="modal-overlay" id="modal-checkin" onclick="if(event.target===this)closeModal('modal-checkin')">
   <div class="modal-box">
@@ -730,17 +770,17 @@ canvas{max-width:100%}
         <div class="form-group" style="margin:0">
           <label class="form-label">岩馆</label>
           <input type="text" id="ci-gym" list="gym-list" class="form-input" placeholder="输入或选择" required>
-          <datalist id="gym-list">
-            <option value="羽石"><option value="山宁芙"><option value="擎天"><option value="普岚">
-          </datalist>
+          <datalist id="gym-list"></datalist>
         </div>
       </div>
       <div class="form-grid">
         <div class="form-group" style="margin:0">
           <label class="form-label">活动类型</label>
           <select id="ci-activity" class="form-input">
-            <option>爬</option><option>公开课</option><option>探馆</option>
-            <option>晚练</option><option>顶绳课</option><option>毕业啦</option>
+            <option value="爽爬">爽爬</option>
+            <option value="黑练">黑练</option>
+            <option value="探馆">探馆</option>
+            <option value="公开课">公开课</option>
           </select>
         </div>
         <div class="form-group" style="margin:0">
@@ -752,7 +792,7 @@ canvas{max-width:100%}
       <div class="form-section" id="section-boulder">
         <div class="section-title">
           <span class="section-badge" style="background:#fef3c7;color:#92400e">抱石</span>
-          室内抱石 — V级系统（V0入门 → V7高级）
+          室内抱石
         </div>
         <div class="grade-rows" id="rows-boulder">
           <div class="grade-row">
@@ -762,7 +802,7 @@ canvas{max-width:100%}
               <option value="V3">V3</option><option value="V4">V4</option><option value="V5">V5</option>
               <option value="V6">V6</option><option value="V7">V7</option>
             </select>
-            <input type="number" class="grade-row-input" data-type="boulder" min="0" value="0" placeholder="数量">
+            <div class="grade-row-input-wrap"><span class="grade-row-prefix">磕了</span><input type="number" class="grade-row-input" data-type="boulder" min="0" value="0"><span class="grade-row-suffix">条</span></div>
             <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>
           </div>
         </div>
@@ -773,7 +813,7 @@ canvas{max-width:100%}
         <div class="section-title" onclick="toggleSection('section-kboard')">
           <span class="collapse-arrow"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
           <span class="section-badge" style="background:#ccfbf1;color:#0f766e">K板</span>
-          K板训练 — V级系统（V0入门 → V7高级）
+          K板训练
         </div>
         <div class="grade-rows" id="rows-kboard">
           <div class="grade-row">
@@ -783,7 +823,7 @@ canvas{max-width:100%}
               <option value="KV3">K-V3</option><option value="KV4">K-V4</option><option value="KV5">K-V5</option>
               <option value="KV6">K-V6</option><option value="KV7">K-V7</option>
             </select>
-            <input type="number" class="grade-row-input" data-type="kboard" min="0" value="0" placeholder="数量">
+            <div class="grade-row-input-wrap"><span class="grade-row-prefix">磕了</span><input type="number" class="grade-row-input" data-type="kboard" min="0" value="0"><span class="grade-row-suffix">条</span></div>
             <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>
           </div>
         </div>
@@ -794,7 +834,7 @@ canvas{max-width:100%}
         <div class="section-title" onclick="toggleSection('section-sport')">
           <span class="collapse-arrow"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
           <span class="section-badge" style="background:#c7d2fe;color:#3730a3">高墙</span>
-          高墙难度路线 — YDS系统（10a入门 → 14d顶级）
+          高墙难度路线
         </div>
         <div class="grade-rows" id="rows-sport">
           <div class="grade-row">
@@ -809,7 +849,7 @@ canvas{max-width:100%}
               <option value="14a">5.14a</option><option value="14b">5.14b</option><option value="14c">5.14c</option>
               <option value="14d">5.14d</option>
             </select>
-            <input type="number" class="grade-row-input" data-type="sport" min="0" value="0" placeholder="数量">
+            <div class="grade-row-input-wrap"><span class="grade-row-prefix">磕了</span><input type="number" class="grade-row-input" data-type="sport" min="0" value="0"><span class="grade-row-suffix">条</span></div>
             <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>
           </div>
         </div>
@@ -1283,7 +1323,7 @@ function addRow(type){
   const row=document.createElement('div');
   row.className='grade-row';
   row.innerHTML=`<select class="grade-row-select" data-type="${type}">${optHtml}</select>
-    <input type="number" class="grade-row-input" data-type="${type}" min="0" value="0" placeholder="数量">
+    <div class="grade-row-input-wrap"><span class="grade-row-prefix">磕了</span><input type="number" class="grade-row-input" data-type="${type}" min="0" value="0"><span class="grade-row-suffix">条</span></div>
     <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>`;
   container.appendChild(row);
 }
@@ -1332,8 +1372,8 @@ function populateRows(type,dataObj){
     const row=document.createElement('div');
     row.className='grade-row';
     row.innerHTML=`<select class="grade-row-select" data-type="${type}">${optHtml}</select>
-      <input type="number" class="grade-row-input" data-type="${type}" min="0" value="${val||0}" placeholder="数量">
-      <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>`;
+      <div class="grade-row-input-wrap"><span class="grade-row-prefix">磕了</span><input type="number" class="grade-row-input" data-type="${type}" min="0" value="${val||0}"><span class="grade-row-suffix">条</span></div>
+      <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除×</button>`;
     container.appendChild(row);
   });
   // always keep one empty row at the end for convenience
@@ -1346,10 +1386,18 @@ function openCheckIn(){
   document.getElementById('form-checkin').onsubmit=saveCheckIn;
   document.getElementById('ci-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('ci-gym').value='';
-  document.getElementById('ci-activity').value='爬';
+  document.getElementById('ci-activity').value='爽爬';
   document.getElementById('ci-note').value='';
   resetRows();
+  // 动态生成岩馆选项（从历史记录中提取）
+  populateGymList();
   openModal('modal-checkin');
+}
+
+function populateGymList(){
+  const gyms=[...new Set(db.sessions.map(s=>s.gym).filter(g=>g))];
+  const dl=document.getElementById('gym-list');
+  dl.innerHTML=gyms.map(g=>`<option value="${g}">`).join('');
 }
 
 function saveCheckIn(e){
@@ -1720,14 +1768,14 @@ function parseDate(dateVal){
 }
 
 function parseActivity(note){
-  if(!note) return '爬';
+  if(!note) return '爽爬';
   const noteStr=note.toString();
   if(noteStr.includes('公开课')) return '公开课';
   if(noteStr.includes('探馆')) return '探馆';
-  if(noteStr.includes('晚练')) return '晚练';
-  if(noteStr.includes('顶绳课')) return '顶绳课';
-  if(noteStr.includes('毕业')) return '毕业啦';
-  return '爬';
+  if(noteStr.includes('黑练')||noteStr.includes('晚练')) return '黑练';
+  if(noteStr.includes('爽爬')||noteStr.includes('爬')) return '爽爬';
+  if(noteStr.includes('顶绳课')) return '公开课';
+  return '爽爬';
 }
 
 // ============ SETTINGS ============
