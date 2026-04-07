@@ -602,6 +602,13 @@ canvas{max-width:100%}
           <button class="btn btn-gray btn-block" style="font-size:13px" onclick="openModal('modal-data-info')">📋 数据保存说明</button>
         </div>
       </div>
+      <div class="settings-section">
+        <div class="settings-label">安装应用</div>
+        <button class="btn btn-block" id="btn-install-pwa" style="background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;font-size:14px;font-weight:600;padding:12px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="installPWA()">
+          <span>📱</span><span>添加到主屏幕</span>
+        </button>
+        <p id="install-hint" style="font-size:11px;color:var(--text3);text-align:center;margin-top:6px;display:none"></p>
+      </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-primary btn-block" onclick="saveAndApplySettings()">💾 保存设置</button>
@@ -1378,6 +1385,56 @@ function populateRows(type,dataObj){
   });
   // always keep one empty row at the end for convenience
   addRow(type);
+}
+
+// ============ PWA INSTALL ============
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // 显示按钮
+  const btn = document.getElementById('btn-install-pwa');
+  if (btn) {
+    btn.style.display = 'flex';
+    document.getElementById('install-hint').style.display = 'block';
+    document.getElementById('install-hint').textContent = '点击可将猫爬架添加到手机主屏幕，像原生 App 一样使用';
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  const btn = document.getElementById('btn-install-pwa');
+  if (btn) {
+    btn.innerHTML = '<span>✅</span><span>已安装到主屏幕</span>';
+    btn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+    btn.onclick = null;
+    btn.style.cursor = 'default';
+  }
+  const hint = document.getElementById('install-hint');
+  if (hint) hint.textContent = '猫爬架已成功安装！可以在主屏幕找到它 🎉';
+});
+
+async function installPWA() {
+  if (!deferredPrompt) {
+    // 不支持 beforeinstallprompt，给用户手动指引
+    const hint = document.getElementById('install-hint');
+    if (hint) {
+      const ua = navigator.userAgent.toLowerCase();
+      if (ua.includes('safari') && !ua.includes('chrome')) {
+        hint.textContent = 'iOS: 点击分享图标 → "添加到主屏幕"';
+      } else if (ua.includes('chrome')) {
+        hint.textContent = 'Chrome: 点右上角 ⋮ 菜单 → "添加到主屏幕" 或 "安装应用"';
+      } else {
+        hint.textContent = '请用浏览器菜单中的"添加到主屏幕"功能安装';
+      }
+      hint.style.color = 'var(--orange)';
+    }
+    return;
+  }
+  const result = await deferredPrompt.prompt();
+  console.log(`Install prompt: ${result.outcome}`);
+  deferredPrompt = null;
 }
 
 // ============ CHECK-IN ============
