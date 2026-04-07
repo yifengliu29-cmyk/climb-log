@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#f97316">
+<!-- PWA / Add to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="猫爬架">
+<link rel="manifest" href="manifest.json">
+
+<script>
+// 注册 Service Worker（PWA 必须）
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
 
 <title>猫爬架</title>
 <style>
@@ -345,12 +359,57 @@ canvas{max-width:100%}
   transition:border-color .2s,box-shadow .2s;height:46px;
 }
 .form-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
-.form-section{
-  background:linear-gradient(135deg,rgba(255,247,237,.5),rgba(255,255,255,.4));
-  border:1px solid rgba(249,115,22,.14);
-  border-radius:14px;padding:14px;margin-bottom:12px;
+/* ── Dynamic row input (check-in) ── */
+.grade-rows{display:flex;flex-direction:column;gap:6px}
+.grade-row{display:flex;align-items:center;gap:6px}
+.grade-row-select{
+  flex:0 0 88px;min-width:0;
+  background:rgba(248,244,240,.7);
+  border:1.5px solid rgba(0,0,0,.09);
+  border-radius:10px;padding:0 28px 0 10px;
+  font-size:13px;font-weight:600;color:var(--text);
+  height:38px;line-height:38px;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23a89080' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;
+  cursor:pointer;
 }
-.section-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.grade-row-select:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.grade-row-input{
+  flex:1;min-width:0;
+  background:rgba(248,244,240,.7);
+  border:1.5px solid rgba(0,0,0,.09);
+  border-radius:10px;padding:0 10px;
+  font-size:14px;font-weight:700;color:var(--text);
+  height:38px;text-align:center;
+}
+.grade-row-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.grade-row-del{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;border:none;transition:all .15s;
+  background:rgba(254,226,226,.5);color:#dc2626;
+}
+.grade-row-del:hover{background:rgba(254,202,202,.8)}
+.grade-row-del:active{transform:scale(.88)}
+.grade-add-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  font-size:16px;font-weight:400;color:#059669;
+  border:1.5px dashed rgba(5,150,105,.35);background:transparent;
+  cursor:pointer;transition:all .15s;margin-top:2px;
+}
+.grade-add-btn:hover{background:rgba(209,250,229,.5);border-color:rgba(5,150,105,.55);transform:scale(1.08)}
+.grade-add-btn:active{transform:scale(.92)}
+
+/* ── Collapsible section (check-in) ── */
+.section-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--text);cursor:pointer;user-select:none;-webkit-user-select:none}
+.section-title .collapse-arrow{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;transition:transform .25s ease;flex-shrink:0;color:var(--text3)}
+.section-title .collapse-arrow svg{width:12px;height:12px;stroke:currentColor;stroke-width:2.5;fill:none}
+.collapsed .collapse-arrow{transform:rotate(-90deg)}
+.form-section.collapsed .grade-rows{display:none}
+.form-section.collapsed .grade-add-btn{display:none}
+.form-section{background:linear-gradient(135deg,rgba(255,247,237,.5),rgba(255,255,255,.4));border:1px solid rgba(249,115,22,.14);border-radius:14px;padding:14px;margin-bottom:12px;overflow:hidden}
 .section-badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
 .grade-inputs{display:grid;gap:6px;margin-top:8px}
 .grade-inputs.cols5{grid-template-columns:repeat(5,1fr)}
@@ -690,68 +749,71 @@ canvas{max-width:100%}
         </div>
       </div>
 
-      <div class="form-section">
+      <div class="form-section" id="section-boulder">
         <div class="section-title">
           <span class="section-badge" style="background:#fef3c7;color:#92400e">抱石</span>
           室内抱石 — V级系统（V0入门 → V7高级）
         </div>
-        <div class="grade-inputs cols4">
-          <div class="grade-input-item"><span class="grade-input-label v0">V0</span><input type="number" id="b-V0" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v1">V1</span><input type="number" id="b-V1" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v2">V2</span><input type="number" id="b-V2" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v3">V3</span><input type="number" id="b-V3" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v4">V4</span><input type="number" id="b-V4" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v5">V5</span><input type="number" id="b-V5" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v6">V6</span><input type="number" id="b-V6" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label v6">V7</span><input type="number" id="b-V7" class="grade-number-input" min="0" value="0"></div>
+        <div class="grade-rows" id="rows-boulder">
+          <div class="grade-row">
+            <select class="grade-row-select" data-type="boulder">
+              <option value="">选等级</option>
+              <option value="V0">V0</option><option value="V1">V1</option><option value="V2">V2</option>
+              <option value="V3">V3</option><option value="V4">V4</option><option value="V5">V5</option>
+              <option value="V6">V6</option><option value="V7">V7</option>
+            </select>
+            <input type="number" class="grade-row-input" data-type="boulder" min="0" value="0" placeholder="数量">
+            <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>
+          </div>
         </div>
+        <button type="button" class="grade-add-btn" onclick="addRow('boulder')" title="添加一行">＋</button>
       </div>
 
-      <div class="form-section">
-        <div class="section-title">
+      <div class="form-section collapsed" id="section-kboard">
+        <div class="section-title" onclick="toggleSection('section-kboard')">
+          <span class="collapse-arrow"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
           <span class="section-badge" style="background:#ccfbf1;color:#0f766e">K板</span>
           K板训练 — V级系统（V0入门 → V7高级）
         </div>
-        <div class="grade-inputs cols4">
-          <div class="grade-input-item"><span class="grade-input-label v0">K-V0</span><input type="number" id="k-KV0" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V1</span><input type="number" id="k-KV1" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V2</span><input type="number" id="k-KV2" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V3</span><input type="number" id="k-KV3" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V4</span><input type="number" id="k-KV4" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V5</span><input type="number" id="k-KV5" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V6</span><input type="number" id="k-KV6" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label kboard">K-V7</span><input type="number" id="k-KV7" class="grade-number-input" min="0" value="0"></div>
+        <div class="grade-rows" id="rows-kboard">
+          <div class="grade-row">
+            <select class="grade-row-select" data-type="kboard">
+              <option value="">选等级</option>
+              <option value="KV0">K-V0</option><option value="KV1">K-V1</option><option value="KV2">K-V2</option>
+              <option value="KV3">K-V3</option><option value="KV4">K-V4</option><option value="KV5">K-V5</option>
+              <option value="KV6">K-V6</option><option value="KV7">K-V7</option>
+            </select>
+            <input type="number" class="grade-row-input" data-type="kboard" min="0" value="0" placeholder="数量">
+            <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>
+          </div>
         </div>
+        <button type="button" class="grade-add-btn" onclick="addRow('kboard')" title="添加一行">＋</button>
       </div>
 
-      <div class="form-section">
-        <div class="section-title">
+      <div class="form-section collapsed" id="section-sport">
+        <div class="section-title" onclick="toggleSection('section-sport')">
+          <span class="collapse-arrow"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
           <span class="section-badge" style="background:#c7d2fe;color:#3730a3">高墙</span>
           高墙难度路线 — YDS系统（10a入门 → 14d顶级）
         </div>
-        <div class="grade-inputs cols5">
-          <div class="grade-input-item"><span class="grade-input-label sport">&lt;5.10a</span><input type="number" id="s-lt10" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label sport">10a</span><input type="number" id="s-10a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label sport">10b</span><input type="number" id="s-10b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label sport">10c</span><input type="number" id="s-10c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label sport">10d</span><input type="number" id="s-10d" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s11">11a</span><input type="number" id="s-11a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s11">11b</span><input type="number" id="s-11b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s11">11c</span><input type="number" id="s-11c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s11">11d</span><input type="number" id="s-11d" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s12">12a</span><input type="number" id="s-12a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s12">12b</span><input type="number" id="s-12b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s12">12c</span><input type="number" id="s-12c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s12">12d</span><input type="number" id="s-12d" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s13">13a</span><input type="number" id="s-13a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s13">13b</span><input type="number" id="s-13b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s13">13c</span><input type="number" id="s-13c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s13">13d</span><input type="number" id="s-13d" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s14">14a</span><input type="number" id="s-14a" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s14">14b</span><input type="number" id="s-14b" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s14">14c</span><input type="number" id="s-14c" class="grade-number-input" min="0" value="0"></div>
-          <div class="grade-input-item"><span class="grade-input-label s14">14d</span><input type="number" id="s-14d" class="grade-number-input" min="0" value="0"></div>
+        <div class="grade-rows" id="rows-sport">
+          <div class="grade-row">
+            <select class="grade-row-select" data-type="sport">
+              <option value="">选等级</option>
+              <option value="lt10">&lt;5.10a</option><option value="10a">5.10a</option>
+              <option value="10b">5.10b</option><option value="10c">5.10c</option><option value="10d">5.10d</option>
+              <option value="11a">5.11a</option><option value="11b">5.11b</option><option value="11c">5.11c</option>
+              <option value="11d">5.11d</option><option value="12a">5.12a</option><option value="12b">5.12b</option>
+              <option value="12c">5.12c</option><option value="12d">5.12d</option><option value="13a">5.13a</option>
+              <option value="13b">5.13b</option><option value="13c">5.13c</option><option value="13d">5.13d</option>
+              <option value="14a">5.14a</option><option value="14b">5.14b</option><option value="14c">5.14c</option>
+              <option value="14d">5.14d</option>
+            </select>
+            <input type="number" class="grade-row-input" data-type="sport" min="0" value="0" placeholder="数量">
+            <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>
+          </div>
         </div>
+        <button type="button" class="grade-add-btn" onclick="addRow('sport')" title="添加一行">＋</button>
       </div>
 
       <div class="modal-footer">
@@ -1200,6 +1262,84 @@ function renderGradeChips(s){
   return chips.length?`<div class="grades-row">${chips.join('')}</div>`:'';
 }
 
+// ============ DYNAMIC ROW INPUT (check-in) ============
+const GRADE_OPTIONS={
+  boulder:[['V0','V0'],['V1','V1'],['V2','V2'],['V3','V3'],['V4','V4'],['V5','V5'],['V6','V6'],['V7','V7']],
+  kboard:[['KV0','K-V0'],['KV1','K-V1'],['KV2','K-V2'],['KV3','K-V3'],['KV4','K-V4'],['KV5','K-V5'],['KV6','K-V6'],['KV7','K-V7']],
+  sport:[['lt10','<5.10a'],['10a','5.10a'],['10b','5.10b'],['10c','5.10c'],['10d','5.10d'],
+         ['11a','5.11a'],['11b','5.11b'],['11c','5.11c'],['11d','5.11d'],
+         ['12a','5.12a'],['12b','5.12b'],['12c','5.12c'],['12d','5.12d'],
+         ['13a','5.13a'],['13b','5.13b'],['13c','5.13c'],['13d','5.13d'],
+         ['14a','5.14a'],['14b','5.14b'],['14c','5.14c'],['14d','5.14d']]
+};
+
+function addRow(type){
+  const container=document.getElementById('rows-'+type);
+  if(!container) return;
+  // limit max rows to avoid clutter
+  if(container.querySelectorAll('.grade-row').length>=20){ notify('最多添加20行','error'); return; }
+  const opts=GRADE_OPTIONS[type]||[];
+  const optHtml='<option value="">选等级</option>'+opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('');
+  const row=document.createElement('div');
+  row.className='grade-row';
+  row.innerHTML=`<select class="grade-row-select" data-type="${type}">${optHtml}</select>
+    <input type="number" class="grade-row-input" data-type="${type}" min="0" value="0" placeholder="数量">
+    <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>`;
+  container.appendChild(row);
+}
+
+function removeRow(btn){
+  const row=btn.closest('.grade-row');
+  const container=row.parentElement;
+  // keep at least one row
+  if(container.querySelectorAll('.grade-row').length<=1) return;
+  row.remove();
+}
+
+function collectRows(type){
+  const result={};
+  const container=document.getElementById('rows-'+type);
+  if(!container) return result;
+  container.querySelectorAll('.grade-row').forEach(row=>{
+    const sel=row.querySelector('.grade-row-select');
+    const inp=row.querySelector('.grade-row-input');
+    if(!sel||!inp) return;
+    const grade=sel.value;
+    const val=parseInt(inp.value)||0;
+    if(grade&&val>0) result[grade]=val;
+  });
+  return result;
+}
+
+function resetRows(){
+  ['boulder','kboard','sport'].forEach(type=>{
+    const container=document.getElementById('rows-'+type);
+    if(!container) return;
+    container.innerHTML='';
+    addRow(type);
+  });
+}
+
+function populateRows(type,dataObj){
+  const container=document.getElementById('rows-'+type);
+  if(!container||!dataObj) return;
+  container.innerHTML='';
+  const entries=Object.entries(dataObj);
+  if(entries.length===0){ addRow(type); return; }
+  entries.forEach(([grade,val])=>{
+    const opts=GRADE_OPTIONS[type]||[];
+    const optHtml='<option value="">选等级</option>'+opts.map(o=>`<option value="${o[0]}"${o[0]===grade?' selected':''}>${o[1]}</option>`).join('');
+    const row=document.createElement('div');
+    row.className='grade-row';
+    row.innerHTML=`<select class="grade-row-select" data-type="${type}">${optHtml}</select>
+      <input type="number" class="grade-row-input" data-type="${type}" min="0" value="${val||0}" placeholder="数量">
+      <button type="button" class="grade-row-del" onclick="removeRow(this)" title="删除">×</button>`;
+    container.appendChild(row);
+  });
+  // always keep one empty row at the end for convenience
+  addRow(type);
+}
+
 // ============ CHECK-IN ============
 function openCheckIn(){
   // reset form
@@ -1208,9 +1348,7 @@ function openCheckIn(){
   document.getElementById('ci-gym').value='';
   document.getElementById('ci-activity').value='爬';
   document.getElementById('ci-note').value='';
-  ['V0','V1','V2','V3','V4','V5','V6','V7'].forEach(g=>document.getElementById('b-'+g).value=0);
-  ['KV0','KV1','KV2','KV3','KV4','KV5','KV6','KV7'].forEach(g=>document.getElementById('k-'+g).value=0);
-  ['lt10','10a','10b','10c','10d','11a','11b','11c','11d','12a','12b','12c','12d','13a','13b','13c','13d','14a','14b','14c','14d'].forEach(g=>document.getElementById('s-'+g).value=0);
+  resetRows();
   openModal('modal-checkin');
 }
 
@@ -1224,9 +1362,9 @@ function saveCheckIn(e){
     createdAt:new Date().toISOString(),
     boulder:{}, kboard:{}, sport:{}
   };
-  ['V0','V1','V2','V3','V4','V5','V6','V7'].forEach(g=>{ const v=parseInt(document.getElementById('b-'+g).value)||0; if(v>0) sess.boulder[g]=v; });
-  ['KV0','KV1','KV2','KV3','KV4','KV5','KV6','KV7'].forEach(g=>{ const v=parseInt(document.getElementById('k-'+g).value)||0; if(v>0) sess.kboard[g]=v; });
-  ['lt10','10a','10b','10c','10d','11a','11b','11c','11d','12a','12b','12c','12d','13a','13b','13c','13d','14a','14b','14c','14d'].forEach(g=>{ const v=parseInt(document.getElementById('s-'+g).value)||0; if(v>0) sess.sport[g]=v; });
+  Object.assign(sess.boulder, collectRows('boulder'));
+  Object.assign(sess.kboard, collectRows('kboard'));
+  Object.assign(sess.sport, collectRows('sport'));
   
   db.sessions.push(sess);
   saveDB();
@@ -1243,9 +1381,9 @@ function editSession(id){
   document.getElementById('ci-gym').value=s.gym;
   document.getElementById('ci-activity').value=s.activity;
   document.getElementById('ci-note').value=s.note||'';
-  ['V0','V1','V2','V3','V4','V5','V6','V7'].forEach(g=>document.getElementById('b-'+g).value=s.boulder[g]||0);
-  ['KV0','KV1','KV2','KV3','KV4','KV5','KV6','KV7'].forEach(g=>document.getElementById('k-'+g).value=s.kboard[g]||0);
-  ['lt10','10a','10b','10c','10d','11a','11b','11c','11d','12a','12b','12c','12d','13a','13b','13c','13d','14a','14b','14c','14d'].forEach(g=>document.getElementById('s-'+g).value=s.sport[g]||0);
+  populateRows('boulder',s.boulder);
+  populateRows('kboard',s.kboard);
+  populateRows('sport',s.sport);
   document.getElementById('form-checkin').onsubmit=function(e){
     e.preventDefault();
     db.sessions=db.sessions.filter(x=>x.id!==id);
@@ -1651,6 +1789,11 @@ function saveAndApplySettings(){
 // ============ UI UTILS ============
 function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function toggleSection(id){
+  const el=document.getElementById(id);
+  if(el) el.classList.toggle('collapsed');
+}
 
 function switchTab(name, btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
